@@ -1,29 +1,49 @@
 <?php
-require __DIR__ . 'autoload.php';
+require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/functions.php';
 
-use \ConvertApi\ConvertApi;
+requireLogin();
 
-# set your api secret
-ConvertApi::setApiSecret(getenv('0UA62DeuvRLOIUAq'));
+require_once __DIR__ . '/includes/header.php';
 
-# Example of saving Word docx to PDF and to PNG
-# https://www.convertapi.com/docx-to-pdf
-# https://www.convertapi.com/docx-to-png
+$modules = [
+    ['name' => 'Registrar', 'url' => '/modules/registrar/', 'icon' => 'files', 'color' => 'primary'],
+    ['name' => 'Exam', 'url' => '/modules/exam/', 'icon' => 'pen', 'color' => 'success'],
+    ['name' => 'Academic (NEP)', 'url' => '/modules/academic/', 'icon' => 'book', 'color' => 'info'],
+    ['name' => 'Security', 'url' => '#', 'icon' => 'shield', 'color' => 'secondary'],
+    ['name' => 'Hostel', 'url' => '#', 'icon' => 'home', 'color' => 'warning'],
+    ['name' => 'Mess', 'url' => '#', 'icon' => 'utensils', 'color' => 'danger'],
+    ['name' => 'Schools', 'url' => '#', 'icon' => 'school', 'color' => 'dark'],
+    ['name' => 'E-Governance', 'url' => '#', 'icon' => 'globe', 'color' => 'primary'],
+    ['name' => 'DSW', 'url' => '#', 'icon' => 'user-friends', 'color' => 'info'],
+    ['name' => 'DSA', 'url' => '#', 'icon' => 'running', 'color' => 'success'],
+    ['name' => 'Accounts', 'url' => '#', 'icon' => 'rupee-sign', 'color' => 'warning'],
+    ['name' => 'IQAC', 'url' => '#', 'icon' => 'chart-line', 'color' => 'secondary'],
+    ['name' => 'HR', 'url' => '#', 'icon' => 'users', 'color' => 'primary'],
+    ['name' => 'Transport', 'url' => '#', 'icon' => 'bus', 'color' => 'dark'],
+];
 
-$dir = sys_get_temp_dir();
+?>
 
-# Use upload IO wrapper to upload file only once to the API
-$upload = new \ConvertApi\FileUpload('files/test.docx');
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="display-6">Dashboard</h2>
+        <p class="lead">Welcome to the University ERP System.</p>
+    </div>
+</div>
 
-$result = ConvertApi::convert('pdf', ['File' => $upload]);
-$savedFiles = $result->saveFiles($dir);
+<div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+    <?php foreach ($modules as $module): ?>
+    <div class="col">
+        <div class="card h-100 module-card border-<?php echo $module['color']; ?> shadow-sm" onclick="window.location.href='<?php echo $module['url']; ?>'">
+            <div class="card-body text-center">
+                <h5 class="card-title text-<?php echo $module['color']; ?>"><?php echo $module['name']; ?></h5>
+                <p class="card-text">Manage <?php echo $module['name']; ?> Department</p>
+                <a href="<?php echo $module['url']; ?>" class="btn btn-outline-<?php echo $module['color']; ?> btn-sm">Access</a>
+            </div>
+        </div>
+    </div>
+    <?php endforeach; ?>
+</div>
 
-echo "The PDF saved to:\n";
-print_r($savedFiles);
-
-# Reuse the same uploaded file
-$result = ConvertApi::convert('png', ['File' => $upload]);
-$savedFiles = $result->saveFiles($dir);
-
-echo "The PNG saved to:\n";
-print_r($savedFiles);
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
