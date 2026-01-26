@@ -3,8 +3,7 @@ require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/functions.php';
 
 requireLogin();
-// Ideally check for registrar role here
-// if (!hasRole('registrar') && !hasRole('admin')) { redirect('/'); }
+if (!hasRole('registrar') && !hasRole('admin')) { redirect('/'); }
 
 require_once __DIR__ . '/../../includes/header.php';
 ?>
@@ -26,8 +25,8 @@ require_once __DIR__ . '/../../includes/header.php';
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Student Enrollment</h5>
-                <p class="card-text">Register new students and manage admissions.</p>
-                <a href="#" class="btn btn-primary">Manage Admissions</a>
+                <p class="card-text">Review pending applications and verify documents.</p>
+                <a href="verification_list.php" class="btn btn-primary">Manage Verification</a>
             </div>
         </div>
     </div>

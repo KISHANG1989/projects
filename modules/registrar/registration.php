@@ -58,6 +58,30 @@ require_once __DIR__ . '/../../includes/header.php';
                         <option value="Other">Other</option>
                     </select>
                 </div>
+                <div class="col-md-6">
+                    <label class="form-label">Program Applied For</label>
+                    <select name="course_applied" class="form-control" required>
+                        <option value="">Select Program</option>
+                        <option value="B.Tech">B.Tech</option>
+                        <option value="BSc">B.Sc</option>
+                        <option value="BBA">BBA</option>
+                        <option value="MBA">MBA</option>
+                        <option value="M.Tech">M.Tech</option>
+                        <option value="PhD">PhD</option>
+                    </select>
+                </div>
+            </div>
+
+            <h5 class="mt-4">Academic Details</h5>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Previous Academic Performance (CGPA / %)</label>
+                    <input type="text" name="previous_marks" class="form-control" placeholder="e.g., 85%" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">NEP ABC ID (Academic Bank of Credits)</label>
+                    <input type="text" name="abc_id" class="form-control" placeholder="12-digit ABC ID">
+                </div>
             </div>
 
             <!-- International Fields -->
@@ -92,13 +116,17 @@ require_once __DIR__ . '/../../includes/header.php';
 
             <h5 class="mt-4">Documents</h5>
             <div class="row mb-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label">Photo</label>
                     <input type="file" name="photo" class="form-control" required>
                 </div>
-                 <div class="col-md-6">
+                 <div class="col-md-4">
                     <label class="form-label">ID Proof (Aadhar/PAN/Other)</label>
                     <input type="file" name="id_proof" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Previous Marksheet</label>
+                    <input type="file" name="previous_marksheet" class="form-control" required>
                 </div>
             </div>
 

@@ -17,6 +17,9 @@ $_POST = [
     'address' => '123 Test St',
     'nationality' => 'International',
     'category' => 'General',
+    'course_applied' => 'B.Tech',
+    'previous_marks' => '90%',
+    'abc_id' => 'ABC123456789',
     'passport_number' => 'P123456',
     'visa_details' => 'Student Visa',
     'country_of_origin' => 'Testland'
@@ -54,6 +57,13 @@ $_FILES = [
         'tmp_name' => $tmp_file,
         'error' => 0,
         'size' => 123
+    ],
+    'previous_marksheet' => [
+        'name' => 'marks.pdf',
+        'type' => 'application/pdf',
+        'tmp_name' => $tmp_file,
+        'error' => 0,
+        'size' => 123
     ]
 ];
 
@@ -82,8 +92,15 @@ if ($intl) {
 $stmt = $pdo->query("SELECT COUNT(*) FROM documents WHERE user_id = 4");
 $count = $stmt->fetchColumn();
 
-if ($count == 4) { // photo, id, passport, visa
-    echo "PASS: 4 documents records created.\n";
+if ($count == 5) { // photo, id, passport, visa, marksheet
+    echo "PASS: 5 documents records created.\n";
 } else {
-    echo "FAIL: Expected 4 documents, found $count.\n";
+    echo "FAIL: Expected 5 documents, found $count.\n";
+}
+
+// Verify New Fields
+if ($profile['course_applied'] === 'B.Tech' && $profile['previous_marks'] === '90%' && $profile['abc_id'] === 'ABC123456789') {
+    echo "PASS: New academic fields saved correctly.\n";
+} else {
+    echo "FAIL: Academic fields mismatch.\n";
 }

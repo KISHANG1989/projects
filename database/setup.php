@@ -26,6 +26,10 @@ $sql = "CREATE TABLE IF NOT EXISTS student_profiles (
     address TEXT,
     nationality TEXT NOT NULL DEFAULT 'Indian',
     category TEXT,
+    course_applied TEXT,
+    previous_marks TEXT,
+    abc_id TEXT,
+    roll_number TEXT,
     enrollment_status TEXT DEFAULT 'Pending',
     FOREIGN KEY (user_id) REFERENCES users(id)
 )";

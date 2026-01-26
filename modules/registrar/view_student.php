@@ -41,9 +41,26 @@ require_once __DIR__ . '/../../includes/header.php';
         <div class="card mb-4">
             <div class="card-header">Personal Information</div>
             <div class="card-body">
-                <p><strong>DOB:</strong> <?php echo htmlspecialchars($profile['dob']); ?></p>
-                <p><strong>Nationality:</strong> <?php echo htmlspecialchars($profile['nationality']); ?></p>
-                <p><strong>Address:</strong> <?php echo nl2br(htmlspecialchars($profile['address'])); ?></p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Program Applied:</strong> <?php echo htmlspecialchars($profile['course_applied'] ?? 'N/A'); ?></p>
+                        <p><strong>DOB:</strong> <?php echo htmlspecialchars($profile['dob']); ?></p>
+                        <p><strong>Nationality:</strong> <?php echo htmlspecialchars($profile['nationality']); ?></p>
+                        <p><strong>Address:</strong> <?php echo nl2br(htmlspecialchars($profile['address'])); ?></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Previous Marks:</strong> <?php echo htmlspecialchars($profile['previous_marks'] ?? 'N/A'); ?></p>
+                        <p><strong>ABC ID:</strong> <?php echo htmlspecialchars($profile['abc_id'] ?? 'N/A'); ?></p>
+                        <p><strong>Enrollment Status:</strong>
+                            <span class="badge bg-<?php echo $profile['enrollment_status'] == 'Approved' ? 'success' : ($profile['enrollment_status'] == 'Rejected' ? 'danger' : 'warning'); ?>">
+                                <?php echo htmlspecialchars($profile['enrollment_status']); ?>
+                            </span>
+                        </p>
+                         <?php if (!empty($profile['roll_number'])): ?>
+                            <p><strong>Roll Number:</strong> <span class="badge bg-primary text-wrap"><?php echo htmlspecialchars($profile['roll_number']); ?></span></p>
+                        <?php endif; ?>
+                    </div>
+                </div>
 
                 <?php if ($intl): ?>
                     <hr>
@@ -85,9 +102,15 @@ require_once __DIR__ . '/../../includes/header.php';
                         <form method="POST" action="verify_action.php" style="display:inline;">
                             <input type="hidden" name="doc_id" value="<?php echo $doc['id']; ?>">
                             <input type="hidden" name="action" value="reject_doc">
-                            <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                            <div class="input-group input-group-sm mt-1">
+                                <input type="text" name="remarks" class="form-control" placeholder="Reason for rejection">
+                                <button type="submit" class="btn btn-danger">Reject</button>
+                            </div>
                         </form>
                         <?php else: ?>
+                            <?php if ($doc['status'] == 'Rejected' && !empty($doc['remarks'])): ?>
+                                <small class="text-danger d-block">Reason: <?php echo htmlspecialchars($doc['remarks']); ?></small>
+                            <?php endif; ?>
                             Action Taken
                         <?php endif; ?>
                     </td>

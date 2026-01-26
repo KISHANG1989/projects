@@ -14,9 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'verify_doc' || $action === 'reject_doc') {
         $doc_id = (int)$_POST['doc_id'];
         $status = ($action === 'verify_doc') ? 'Verified' : 'Rejected';
+        $remarks = isset($_POST['remarks']) ? sanitize($_POST['remarks']) : null;
 
-        $stmt = $pdo->prepare("UPDATE documents SET status = ? WHERE id = ?");
-        $stmt->execute([$status, $doc_id]);
+        $stmt = $pdo->prepare("UPDATE documents SET status = ?, remarks = ? WHERE id = ?");
+        $stmt->execute([$status, $remarks, $doc_id]);
 
         // We need to redirect back. We don't have the student profile ID easily unless passed.
         // But we can get it from HTTP_REFERER or fetch user_id from doc then profile.
@@ -31,8 +32,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $profile_id = (int)$_POST['profile_id'];
         $decision = $_POST['decision']; // Approved or Rejected
 
-        $stmt = $pdo->prepare("UPDATE student_profiles SET enrollment_status = ? WHERE id = ?");
-        $stmt->execute([$decision, $profile_id]);
+        if ($decision === 'Approved') {
+            // Generate Roll Number: UNIV-{YEAR}-{ID}
+            $year = date('Y');
+            // Pad ID with leading zeros, assume max 3 digits for now or 4
+            $roll_number = sprintf("UNIV-%s-%03d", $year, $profile_id);
+
+            $stmt = $pdo->prepare("UPDATE student_profiles SET enrollment_status = ?, roll_number = ? WHERE id = ?");
+            $stmt->execute([$decision, $roll_number, $profile_id]);
+        } else {
+            $stmt = $pdo->prepare("UPDATE student_profiles SET enrollment_status = ? WHERE id = ?");
+            $stmt->execute([$decision, $profile_id]);
+        }
 
         redirect('verification_list.php');
     }

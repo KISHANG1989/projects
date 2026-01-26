@@ -14,6 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $address = sanitize($_POST['address']);
     $nationality = sanitize($_POST['nationality']); // Indian or International
     $category = sanitize($_POST['category']);
+    $course_applied = sanitize($_POST['course_applied']);
+    $previous_marks = sanitize($_POST['previous_marks']);
+    $abc_id = isset($_POST['abc_id']) ? sanitize($_POST['abc_id']) : null;
 
     try {
         $pdo->beginTransaction();
@@ -26,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Insert Profile
-        $stmt = $pdo->prepare("INSERT INTO student_profiles (user_id, full_name, dob, address, nationality, category) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$user_id, $full_name, $dob, $address, $nationality, $category]);
+        $stmt = $pdo->prepare("INSERT INTO student_profiles (user_id, full_name, dob, address, nationality, category, course_applied, previous_marks, abc_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$user_id, $full_name, $dob, $address, $nationality, $category, $course_applied, $previous_marks, $abc_id]);
         $profile_id = $pdo->lastInsertId();
 
         // International Details
@@ -43,17 +46,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // File Uploads
         $upload_dir = __DIR__ . '/../../uploads/documents/';
 
-        $required_docs = ['photo', 'id_proof'];
+        $required_docs = ['photo', 'id_proof', 'previous_marksheet'];
         if ($nationality === 'International') {
             $required_docs[] = 'passport_copy';
             $required_docs[] = 'visa_copy';
         }
+
+        $allowed_extensions = ['jpg', 'jpeg', 'png', 'pdf'];
 
         foreach ($required_docs as $doc_key) {
             if (isset($_FILES[$doc_key]) && $_FILES[$doc_key]['error'] === UPLOAD_ERR_OK) {
                 $tmp_name = $_FILES[$doc_key]['tmp_name'];
                 $name = basename($_FILES[$doc_key]['name']);
                 $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+
+                if (!in_array($ext, $allowed_extensions)) {
+                    throw new Exception("Invalid file type for $doc_key. Allowed: " . implode(', ', $allowed_extensions));
+                }
+
                 $new_name = $user_id . '_' . $doc_key . '_' . time() . '.' . $ext;
                 $target = $upload_dir . $new_name;
 
