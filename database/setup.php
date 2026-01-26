@@ -31,6 +31,11 @@ $sql = "CREATE TABLE IF NOT EXISTS student_profiles (
     abc_id TEXT,
     roll_number TEXT,
     enrollment_status TEXT DEFAULT 'Pending',
+    application_no TEXT,
+    is_form_locked INTEGER DEFAULT 0,
+    edit_permissions TEXT,
+    extended_data TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 )";
 $pdo->exec($sql);
