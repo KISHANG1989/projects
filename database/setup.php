@@ -185,6 +185,112 @@ $sql = "CREATE TABLE IF NOT EXISTS student_marks (
 $pdo->exec($sql);
 echo "Table 'student_marks' created.\n";
 
+// Migration for exam_type in exams
+try {
+    $pdo->query("SELECT type FROM exams LIMIT 1");
+} catch (Exception $e) {
+    $pdo->exec("ALTER TABLE exams ADD COLUMN type TEXT DEFAULT 'Endterm'"); // Midterm, Endterm, Re-appear, Special, etc.
+    echo "Added 'type' column to exams table.\n";
+}
+
+// Migration for staff_type in users
+try {
+    $pdo->query("SELECT staff_type FROM users LIMIT 1");
+} catch (Exception $e) {
+    $pdo->exec("ALTER TABLE users ADD COLUMN staff_type TEXT"); // Teaching, Non-Teaching
+    echo "Added 'staff_type' column to users table.\n";
+}
+
+// --- INFRASTRUCTURE TABLES ---
+
+// Campus Details
+$sql = "CREATE TABLE IF NOT EXISTS campus_details (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    address TEXT,
+    logo_path TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)";
+$pdo->exec($sql);
+echo "Table 'campus_details' created.\n";
+
+// Buildings
+$sql = "CREATE TABLE IF NOT EXISTS buildings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    block_code TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)";
+$pdo->exec($sql);
+echo "Table 'buildings' created.\n";
+
+// Classrooms
+$sql = "CREATE TABLE IF NOT EXISTS classrooms (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    building_id INTEGER NOT NULL,
+    floor_no TEXT NOT NULL, -- Ground, 1st, 2nd...
+    room_no TEXT NOT NULL,
+    capacity INTEGER NOT NULL DEFAULT 30,
+    type TEXT DEFAULT 'Lecture Hall', -- Lecture Hall, Lab, Seminar Hall
+    side TEXT, -- LHS, RHS
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (building_id) REFERENCES buildings(id)
+)";
+$pdo->exec($sql);
+echo "Table 'classrooms' created.\n";
+
+
+// --- EXAM LOGISTICS TABLES ---
+
+// Exam Applications
+$sql = "CREATE TABLE IF NOT EXISTS exam_applications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id INTEGER NOT NULL,
+    exam_id INTEGER NOT NULL,
+    status TEXT DEFAULT 'Pending', -- Pending, Approved, Rejected
+    payment_status TEXT DEFAULT 'Unpaid', -- Unpaid, Paid
+    applied_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES users(id),
+    FOREIGN KEY (exam_id) REFERENCES exams(id),
+    UNIQUE(student_id, exam_id)
+)";
+$pdo->exec($sql);
+echo "Table 'exam_applications' created.\n";
+
+// Seating Allocations
+$sql = "CREATE TABLE IF NOT EXISTS seating_allocations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    exam_id INTEGER NOT NULL,
+    subject_id INTEGER NOT NULL, -- Seating is usually per subject exam date
+    room_id INTEGER NOT NULL,
+    student_id INTEGER NOT NULL,
+    seat_no TEXT NOT NULL,
+    allocated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (exam_id) REFERENCES exams(id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(id),
+    FOREIGN KEY (room_id) REFERENCES classrooms(id),
+    FOREIGN KEY (student_id) REFERENCES users(id)
+)";
+$pdo->exec($sql);
+echo "Table 'seating_allocations' created.\n";
+
+// Invigilation Duties
+$sql = "CREATE TABLE IF NOT EXISTS invigilation_duties (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    exam_id INTEGER NOT NULL,
+    room_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL, -- Staff ID
+    duty_date DATE NOT NULL,
+    time_slot TEXT, -- e.g., '10:00 - 13:00'
+    assigned_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (exam_id) REFERENCES exams(id),
+    FOREIGN KEY (room_id) REFERENCES classrooms(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+)";
+$pdo->exec($sql);
+echo "Table 'invigilation_duties' created.\n";
+
+
 // Create international_details table
 $sql = "CREATE TABLE IF NOT EXISTS international_details (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

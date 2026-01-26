@@ -8,3 +8,7 @@ verification/debug_*.png
 verification/*.png
 server.log
 verification_output.txt
+verification/*.txt
+db_dump.txt
+db_dump_after.txt
+verification_logistics_v2.txt

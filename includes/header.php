@@ -110,13 +110,25 @@ if (isLoggedIn()) {
             </li>
             <?php if (hasRole('admin') || hasRole('registrar')): ?>
             <li>
-                <a href="/modules/exam/index.php">
+                <a href="#examSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                     <i class="fas fa-edit me-2"></i> Examination
                 </a>
+                <ul class="collapse list-unstyled" id="examSubmenu">
+                    <li><a href="/modules/exam/index.php" class="ps-5">Dashboard</a></li>
+                    <li><a href="/modules/infrastructure/index.php" class="ps-5">Infrastructure</a></li>
+                    <li><a href="/modules/exam/manage_applications.php" class="ps-5">Exam Apps</a></li>
+                    <li><a href="/modules/exam/seating_plan.php" class="ps-5">Seating Plan</a></li>
+                    <li><a href="/modules/exam/invigilation.php" class="ps-5">Invigilation</a></li>
+                </ul>
             </li>
             <?php endif; ?>
 
             <?php if (hasRole('student')): ?>
+            <li>
+                <a href="/modules/exam/apply_exam.php">
+                    <i class="fas fa-file-signature me-2"></i> Apply Exam
+                </a>
+            </li>
             <li>
                 <a href="/modules/exam/admit_card.php">
                     <i class="fas fa-id-card me-2"></i> Admit Card
