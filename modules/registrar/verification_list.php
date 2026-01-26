@@ -10,7 +10,26 @@ if (!hasRole('registrar') && !hasRole('admin')) {
 require_once __DIR__ . '/../../includes/header.php';
 
 $pdo = getDBConnection();
-$stmt = $pdo->query("SELECT sp.*, u.username FROM student_profiles sp JOIN users u ON sp.user_id = u.id WHERE sp.enrollment_status = 'Pending'");
+
+// Fetch Filters
+$years = $pdo->query("SELECT DISTINCT strftime('%Y', created_at) as year FROM student_profiles WHERE created_at IS NOT NULL ORDER BY year DESC")->fetchAll(PDO::FETCH_COLUMN);
+$programs = $pdo->query("SELECT DISTINCT course_applied FROM student_profiles WHERE course_applied IS NOT NULL ORDER BY course_applied")->fetchAll(PDO::FETCH_COLUMN);
+
+// Build Query
+$query = "SELECT sp.*, u.username FROM student_profiles sp JOIN users u ON sp.user_id = u.id WHERE sp.enrollment_status = 'Pending'";
+$params = [];
+
+if (!empty($_GET['year'])) {
+    $query .= " AND strftime('%Y', sp.created_at) = ?";
+    $params[] = $_GET['year'];
+}
+if (!empty($_GET['program'])) {
+    $query .= " AND sp.course_applied = ?";
+    $params[] = $_GET['program'];
+}
+
+$stmt = $pdo->prepare($query);
+$stmt->execute($params);
 $students = $stmt->fetchAll();
 ?>
 
@@ -21,6 +40,30 @@ $students = $stmt->fetchAll();
     </div>
     <span class="badge bg-primary rounded-pill px-3 py-2"><?php echo count($students); ?> Pending</span>
 </div>
+
+<form method="GET" class="row g-2 mb-4 align-items-center">
+    <div class="col-auto">
+        <label class="visually-hidden">Year</label>
+        <select name="year" class="form-select" onchange="this.form.submit()">
+            <option value="">All Years</option>
+            <?php foreach($years as $y): ?>
+                <option value="<?php echo htmlspecialchars($y); ?>" <?php echo (isset($_GET['year']) && $_GET['year'] == $y) ? 'selected' : ''; ?>><?php echo htmlspecialchars($y); ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="col-auto">
+         <label class="visually-hidden">Program</label>
+         <select name="program" class="form-select" onchange="this.form.submit()">
+            <option value="">All Programs</option>
+            <?php foreach($programs as $p): ?>
+                <option value="<?php echo htmlspecialchars($p); ?>" <?php echo (isset($_GET['program']) && $_GET['program'] == $p) ? 'selected' : ''; ?>><?php echo htmlspecialchars($p); ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+     <div class="col-auto">
+        <a href="verification_list.php" class="btn btn-outline-secondary">Reset</a>
+    </div>
+</form>
 
 <div class="card shadow-sm border-0">
     <div class="card-body p-0">

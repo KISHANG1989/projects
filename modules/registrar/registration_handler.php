@@ -7,6 +7,64 @@ requireLogin();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo = getDBConnection();
 
+    if (isset($_POST['action']) && $_POST['action'] === 'update_doc') {
+        try {
+            $doc_id = (int)$_POST['doc_id'];
+            $user_id = $_SESSION['user_id'];
+
+            // Validate Document Ownership and Status
+            $stmt = $pdo->prepare("SELECT * FROM documents WHERE id = ? AND user_id = ?");
+            $stmt->execute([$doc_id, $user_id]);
+            $doc = $stmt->fetch();
+
+            if (!$doc) {
+                throw new Exception("Document not found.");
+            }
+            if ($doc['status'] === 'Verified') {
+                throw new Exception("Cannot replace verified documents.");
+            }
+
+            // Upload Logic
+            if (isset($_FILES['document']) && $_FILES['document']['error'] === UPLOAD_ERR_OK) {
+                if ($_FILES['document']['size'] > 200 * 1024) {
+                     throw new Exception("File too large. Max 200KB.");
+                }
+
+                $allowed_extensions = ['jpg', 'jpeg', 'png', 'pdf'];
+                $tmp_name = $_FILES['document']['tmp_name'];
+                $name = basename($_FILES['document']['name']);
+                $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+
+                if (!in_array($ext, $allowed_extensions)) {
+                    throw new Exception("Invalid file type.");
+                }
+
+                // Delete old file
+                $old_file = __DIR__ . '/../../uploads/documents/' . $doc['file_path'];
+                if (file_exists($old_file)) {
+                    unlink($old_file);
+                }
+
+                $new_name = $user_id . '_' . $doc['doc_type'] . '_' . time() . '.' . $ext;
+                $target = __DIR__ . '/../../uploads/documents/' . $new_name;
+
+                if (move_uploaded_file($tmp_name, $target)) {
+                    $stmt = $pdo->prepare("UPDATE documents SET file_path = ?, status = 'Pending', remarks = NULL WHERE id = ?");
+                    $stmt->execute([$new_name, $doc_id]);
+                    redirect('/modules/registrar/registration.php?success=1');
+                } else {
+                    throw new Exception("Upload failed.");
+                }
+            } else {
+                throw new Exception("No file selected.");
+            }
+
+        } catch (Exception $e) {
+            redirect('/modules/registrar/registration.php?error=' . urlencode($e->getMessage()));
+        }
+        exit;
+    }
+
     // Basic Details
     $user_id = $_SESSION['user_id'];
     $full_name = sanitize($_POST['full_name']);
@@ -29,8 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Insert Profile
-        $stmt = $pdo->prepare("INSERT INTO student_profiles (user_id, full_name, dob, address, nationality, category, course_applied, previous_marks, abc_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$user_id, $full_name, $dob, $address, $nationality, $category, $course_applied, $previous_marks, $abc_id]);
+        $created_at = date('Y-m-d H:i:s');
+        $stmt = $pdo->prepare("INSERT INTO student_profiles (user_id, full_name, dob, address, nationality, category, course_applied, previous_marks, abc_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$user_id, $full_name, $dob, $address, $nationality, $category, $course_applied, $previous_marks, $abc_id, $created_at]);
         $profile_id = $pdo->lastInsertId();
 
         // International Details
@@ -56,6 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         foreach ($required_docs as $doc_key) {
             if (isset($_FILES[$doc_key]) && $_FILES[$doc_key]['error'] === UPLOAD_ERR_OK) {
+                if ($_FILES[$doc_key]['size'] > 200 * 1024) {
+                    throw new Exception("File $doc_key too large. Max 200KB.");
+                }
                 $tmp_name = $_FILES[$doc_key]['tmp_name'];
                 $name = basename($_FILES[$doc_key]['name']);
                 $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));

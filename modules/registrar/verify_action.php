@@ -19,9 +19,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare("UPDATE documents SET status = ?, remarks = ? WHERE id = ?");
         $stmt->execute([$status, $remarks, $doc_id]);
 
-        // We need to redirect back. We don't have the student profile ID easily unless passed.
-        // But we can get it from HTTP_REFERER or fetch user_id from doc then profile.
-        // Let's rely on Referer for simplicity or redirect to list if fails.
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            redirect($_SERVER['HTTP_REFERER']);
+        } else {
+            redirect('verification_list.php');
+        }
+    }
+    elseif ($action === 'delete_doc') {
+        $doc_id = (int)$_POST['doc_id'];
+
+        // Get file path
+        $stmt = $pdo->prepare("SELECT file_path FROM documents WHERE id = ?");
+        $stmt->execute([$doc_id]);
+        $doc = $stmt->fetch();
+
+        if ($doc) {
+            $filepath = __DIR__ . '/../../uploads/documents/' . $doc['file_path'];
+            if (file_exists($filepath)) {
+                unlink($filepath);
+            }
+
+            $stmt = $pdo->prepare("DELETE FROM documents WHERE id = ?");
+            $stmt->execute([$doc_id]);
+        }
+
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            redirect($_SERVER['HTTP_REFERER']);
+        } else {
+            redirect('verification_list.php');
+        }
+    }
+    elseif ($action === 'replace_doc') {
+        $doc_id = (int)$_POST['doc_id'];
+
+        if (isset($_FILES['document']) && $_FILES['document']['error'] === UPLOAD_ERR_OK) {
+            // Fetch doc to get user_id and doc_type
+            $stmt = $pdo->prepare("SELECT * FROM documents WHERE id = ?");
+            $stmt->execute([$doc_id]);
+            $doc = $stmt->fetch();
+
+            if ($doc) {
+                // Remove old file
+                $old_file = __DIR__ . '/../../uploads/documents/' . $doc['file_path'];
+                if (file_exists($old_file)) {
+                    unlink($old_file);
+                }
+
+                // Upload new
+                $ext = strtolower(pathinfo($_FILES['document']['name'], PATHINFO_EXTENSION));
+                $new_name = $doc['user_id'] . '_' . $doc['doc_type'] . '_' . time() . '.' . $ext;
+                $target = __DIR__ . '/../../uploads/documents/' . $new_name;
+
+                if (move_uploaded_file($_FILES['document']['tmp_name'], $target)) {
+                    $stmt = $pdo->prepare("UPDATE documents SET file_path = ?, status = 'Pending', remarks = NULL WHERE id = ?");
+                    $stmt->execute([$new_name, $doc_id]);
+                }
+            }
+        }
+
         if (isset($_SERVER['HTTP_REFERER'])) {
             redirect($_SERVER['HTTP_REFERER']);
         } else {
@@ -35,7 +90,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($decision === 'Approved') {
             // Generate Roll Number: UNIV-{YEAR}-{ID}
             $year = date('Y');
-            // Pad ID with leading zeros, assume max 3 digits for now or 4
             $roll_number = sprintf("UNIV-%s-%03d", $year, $profile_id);
 
             $stmt = $pdo->prepare("UPDATE student_profiles SET enrollment_status = ?, roll_number = ? WHERE id = ?");

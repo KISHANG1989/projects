@@ -33,185 +33,239 @@ $documents = $stmt->fetchAll();
 require_once __DIR__ . '/../../includes/header.php';
 ?>
 
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <a href="verification_list.php" class="btn btn-outline-secondary mb-3"><i class="fas fa-arrow-left me-2"></i>Back to Queue</a>
+<style>
+    .doc-preview-container {
+        height: 80vh;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 0.25rem;
+    }
+    .doc-card {
+        transition: transform 0.2s;
+    }
+    .doc-img {
+        max-height: 500px;
+        width: auto;
+        max-width: 100%;
+        display: block;
+        margin: 0 auto;
+        cursor: zoom-in;
+    }
+    .pdf-frame {
+        width: 100%;
+        height: 500px;
+        border: none;
+    }
+</style>
 
-        <div class="card border-0 shadow-sm mb-4">
+<div class="row g-0">
+    <!-- Left Panel: Student Details (25%) -->
+    <div class="col-md-3 pe-3" style="height: 85vh; overflow-y: auto;">
+        <a href="verification_list.php" class="btn btn-outline-secondary btn-sm mb-3"><i class="fas fa-arrow-left me-2"></i>Back</a>
+
+        <!-- Profile Summary -->
+        <div class="card border-0 shadow-sm mb-3">
             <div class="card-body text-center">
-                <div class="bg-light rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 80px; height: 80px;">
-                    <i class="fas fa-user fa-3x text-secondary"></i>
+                <div class="bg-light rounded-circle d-inline-flex justify-content-center align-items-center mb-2" style="width: 60px; height: 60px;">
+                    <i class="fas fa-user fa-2x text-secondary"></i>
                 </div>
-                <h4 class="fw-bold"><?php echo htmlspecialchars($profile['full_name']); ?></h4>
-                <p class="text-muted"><?php echo htmlspecialchars($profile['course_applied'] ?? 'N/A'); ?></p>
+                <h5 class="fw-bold mb-1"><?php echo htmlspecialchars($profile['full_name']); ?></h5>
+                <p class="text-muted small mb-2"><?php echo htmlspecialchars($profile['course_applied'] ?? 'N/A'); ?></p>
 
-                <span class="badge bg-<?php echo $profile['enrollment_status'] == 'Approved' ? 'success' : ($profile['enrollment_status'] == 'Rejected' ? 'danger' : 'warning'); ?> fs-6 px-3 py-2">
+                <span class="badge bg-<?php echo $profile['enrollment_status'] == 'Approved' ? 'success' : ($profile['enrollment_status'] == 'Rejected' ? 'danger' : 'warning'); ?> rounded-pill mb-2">
                     <?php echo htmlspecialchars($profile['enrollment_status']); ?>
                 </span>
 
                 <?php if (!empty($profile['roll_number'])): ?>
-                    <div class="mt-3 p-2 bg-light rounded border">
-                        <small class="text-muted d-block">Roll Number</small>
-                        <span class="fw-bold text-primary font-monospace"><?php echo htmlspecialchars($profile['roll_number']); ?></span>
+                    <div class="bg-light rounded p-1 border">
+                        <small class="text-muted d-block" style="font-size: 0.7rem;">Roll Number</small>
+                        <span class="fw-bold text-primary small font-monospace"><?php echo htmlspecialchars($profile['roll_number']); ?></span>
                     </div>
                 <?php endif; ?>
             </div>
         </div>
 
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white fw-bold">Personal Details</div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between px-0">
+        <!-- Personal Details -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white fw-bold py-2 small">Personal Details</div>
+            <div class="card-body p-2">
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item d-flex justify-content-between px-0 py-1">
                         <span class="text-muted">DOB</span>
                         <span><?php echo htmlspecialchars($profile['dob']); ?></span>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between px-0">
+                    <li class="list-group-item d-flex justify-content-between px-0 py-1">
                         <span class="text-muted">Nationality</span>
                         <span><?php echo htmlspecialchars($profile['nationality']); ?></span>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between px-0">
+                    <li class="list-group-item d-flex justify-content-between px-0 py-1">
                         <span class="text-muted">Category</span>
                         <span><?php echo htmlspecialchars($profile['category']); ?></span>
                     </li>
-                    <li class="list-group-item px-0">
-                        <span class="text-muted d-block mb-1">Address</span>
+                    <li class="list-group-item px-0 py-1">
+                        <span class="text-muted d-block">Address</span>
                         <span><?php echo nl2br(htmlspecialchars($profile['address'])); ?></span>
                     </li>
                 </ul>
             </div>
         </div>
 
-        <div class="card border-0 shadow-sm mt-4">
-            <div class="card-header bg-white fw-bold">Academic Details</div>
-            <div class="card-body">
-                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between px-0">
+        <!-- Academic Details -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white fw-bold py-2 small">Academic</div>
+            <div class="card-body p-2">
+                 <ul class="list-group list-group-flush small">
+                    <li class="list-group-item d-flex justify-content-between px-0 py-1">
                         <span class="text-muted">Prev. Marks</span>
                         <span><?php echo htmlspecialchars($profile['previous_marks'] ?? 'N/A'); ?></span>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between px-0">
+                    <li class="list-group-item d-flex justify-content-between px-0 py-1">
                         <span class="text-muted">ABC ID</span>
                         <span><?php echo htmlspecialchars($profile['abc_id'] ?? 'N/A'); ?></span>
                     </li>
                 </ul>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-8">
         <?php if ($intl): ?>
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-info text-white fw-bold"><i class="fas fa-globe me-2"></i>International Details</div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <small class="text-muted">Passport Number</small>
-                        <p class="fw-bold"><?php echo htmlspecialchars($intl['passport_number']); ?></p>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted">Visa Details</small>
-                        <p class="fw-bold"><?php echo htmlspecialchars($intl['visa_details']); ?></p>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted">Country of Origin</small>
-                        <p class="fw-bold"><?php echo htmlspecialchars($intl['country_of_origin']); ?></p>
-                    </div>
-                </div>
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-info text-white fw-bold py-2 small">International</div>
+            <div class="card-body p-2">
+                 <ul class="list-group list-group-flush small">
+                    <li class="list-group-item px-0 py-1">
+                        <span class="text-muted d-block">Passport</span>
+                        <span class="fw-bold"><?php echo htmlspecialchars($intl['passport_number']); ?></span>
+                    </li>
+                     <li class="list-group-item px-0 py-1">
+                        <span class="text-muted d-block">Visa</span>
+                        <span><?php echo htmlspecialchars($intl['visa_details']); ?></span>
+                    </li>
+                    <li class="list-group-item px-0 py-1">
+                        <span class="text-muted d-block">Origin</span>
+                        <span><?php echo htmlspecialchars($intl['country_of_origin']); ?></span>
+                    </li>
+                </ul>
             </div>
         </div>
         <?php endif; ?>
 
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
-                <span>Document Verification</span>
-                <span class="badge bg-secondary"><?php echo count($documents); ?> Files</span>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="ps-4">Document Type</th>
-                                <th>Status</th>
-                                <th>View</th>
-                                <th class="pe-4 text-end">Verification Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($documents as $doc): ?>
-                            <tr>
-                                <td class="ps-4 text-capitalize fw-bold text-secondary"><?php echo htmlspecialchars(str_replace('_', ' ', $doc['doc_type'])); ?></td>
-                                <td>
-                                    <?php
-                                        $statusClass = match($doc['status']) {
-                                            'Verified' => 'badge-verified',
-                                            'Rejected' => 'badge-rejected',
-                                            default => 'badge-pending'
-                                        };
-                                    ?>
-                                    <span class="badge <?php echo $statusClass; ?> rounded-pill">
-                                        <?php echo htmlspecialchars($doc['status']); ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="/uploads/documents/<?php echo htmlspecialchars($doc['file_path']); ?>" target="_blank" class="btn btn-sm btn-outline-info">
-                                        <i class="fas fa-external-link-alt"></i> Open
-                                    </a>
-                                </td>
-                                <td class="text-end pe-4">
-                                    <?php if ($doc['status'] == 'Pending'): ?>
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <form method="POST" action="verify_action.php">
-                                            <input type="hidden" name="doc_id" value="<?php echo $doc['id']; ?>">
-                                            <input type="hidden" name="action" value="verify_doc">
-                                            <button type="submit" class="btn btn-success btn-sm" title="Approve">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                        </form>
-                                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="collapse" data-bs-target="#rejectReason<?php echo $doc['id']; ?>" title="Reject">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <div class="collapse mt-2" id="rejectReason<?php echo $doc['id']; ?>">
-                                        <form method="POST" action="verify_action.php" class="input-group input-group-sm">
-                                            <input type="hidden" name="doc_id" value="<?php echo $doc['id']; ?>">
-                                            <input type="hidden" name="action" value="reject_doc">
-                                            <input type="text" name="remarks" class="form-control" placeholder="Reason..." required>
-                                            <button type="submit" class="btn btn-danger">Confirm</button>
-                                        </form>
-                                    </div>
-                                    <?php else: ?>
-                                        <?php if ($doc['status'] == 'Rejected' && !empty($doc['remarks'])): ?>
-                                            <small class="text-danger d-block"><i class="fas fa-info-circle me-1"></i><?php echo htmlspecialchars($doc['remarks']); ?></small>
-                                        <?php else: ?>
-                                            <span class="text-muted small"><i class="fas fa-check-double"></i> Processed</span>
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
+        <!-- Decision Actions -->
         <div class="card border-0 shadow-sm bg-light">
-            <div class="card-body">
-                <h5 class="card-title fw-bold mb-3">Final Decision</h5>
-                <p class="text-muted mb-4">Once all documents are verified, approve the student to generate an enrollment number.</p>
-                <form method="POST" action="verify_action.php" class="d-flex gap-3">
+            <div class="card-body p-3">
+                <h6 class="fw-bold mb-2">Decision</h6>
+                <form method="POST" action="verify_action.php" class="d-grid gap-2">
                     <input type="hidden" name="profile_id" value="<?php echo $profile['id']; ?>">
                     <input type="hidden" name="action" value="final_decision">
-                    <button type="submit" name="decision" value="Approved" class="btn btn-success flex-grow-1 py-2 fw-bold">
-                        <i class="fas fa-user-check me-2"></i> Approve Admission
+                    <button type="submit" name="decision" value="Approved" class="btn btn-success btn-sm fw-bold">
+                        <i class="fas fa-check me-1"></i> Approve
                     </button>
-                    <button type="submit" name="decision" value="Rejected" class="btn btn-danger flex-grow-1 py-2 fw-bold">
-                        <i class="fas fa-user-times me-2"></i> Reject Admission
+                    <button type="submit" name="decision" value="Rejected" class="btn btn-danger btn-sm fw-bold">
+                        <i class="fas fa-times me-1"></i> Reject
                     </button>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Right Panel: Document Previews (75%) -->
+    <div class="col-md-9">
+        <div class="doc-preview-container shadow-inner">
+            <h5 class="mb-4 sticky-top bg-light p-2 border-bottom">Document Verification (<?php echo count($documents); ?>)</h5>
+
+            <?php foreach ($documents as $doc): ?>
+                <?php
+                    $docUrl = "/uploads/documents/" . $doc['file_path'];
+                    $ext = strtolower(pathinfo($doc['file_path'], PATHINFO_EXTENSION));
+                    $isPdf = $ext === 'pdf';
+                ?>
+                <div class="card mb-5 shadow-sm doc-card" id="doc-<?php echo $doc['id']; ?>">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="fw-bold text-uppercase text-primary me-2"><?php echo str_replace('_', ' ', $doc['doc_type']); ?></span>
+                            <?php
+                                $statusClass = match($doc['status']) {
+                                    'Verified' => 'success',
+                                    'Rejected' => 'danger',
+                                    default => 'warning text-dark'
+                                };
+                            ?>
+                            <span class="badge bg-<?php echo $statusClass; ?>"><?php echo $doc['status']; ?></span>
+                        </div>
+                        <div class="btn-group">
+                            <a href="<?php echo $docUrl; ?>" target="_blank" class="btn btn-outline-secondary btn-sm" title="Open in New Tab"><i class="fas fa-external-link-alt"></i></a>
+
+                            <!-- Delete Button -->
+                            <form method="POST" action="verify_action.php" class="d-inline" onsubmit="return confirm('Permanently delete this document?');">
+                                <input type="hidden" name="action" value="delete_doc">
+                                <input type="hidden" name="doc_id" value="<?php echo $doc['id']; ?>">
+                                <button class="btn btn-outline-danger btn-sm rounded-0" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                            </form>
+
+                             <!-- Replace Button Trigger -->
+                            <button class="btn btn-outline-primary btn-sm rounded-end" type="button" data-bs-toggle="collapse" data-bs-target="#replacePanel<?php echo $doc['id']; ?>" title="Replace">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Replace Panel -->
+                    <div class="collapse bg-light border-bottom p-3" id="replacePanel<?php echo $doc['id']; ?>">
+                         <form action="verify_action.php" method="POST" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
+                            <input type="hidden" name="action" value="replace_doc">
+                            <input type="hidden" name="doc_id" value="<?php echo $doc['id']; ?>">
+                            <input type="file" name="document" class="form-control form-control-sm" required>
+                            <button type="submit" class="btn btn-primary btn-sm">Upload & Replace</button>
+                        </form>
+                    </div>
+
+                    <div class="card-body p-0 bg-secondary bg-opacity-10 text-center">
+                        <?php if ($isPdf): ?>
+                            <iframe src="<?php echo $docUrl; ?>" class="pdf-frame"></iframe>
+                        <?php else: ?>
+                            <img src="<?php echo $docUrl; ?>" class="img-fluid doc-img my-3" onclick="window.open(this.src, '_blank')">
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="card-footer bg-white">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <?php if ($doc['status'] == 'Rejected' && !empty($doc['remarks'])): ?>
+                                    <div class="alert alert-danger mb-0 py-1 small">
+                                        <strong>Rejected:</strong> <?php echo htmlspecialchars($doc['remarks']); ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <form method="POST" action="verify_action.php" class="d-inline-flex gap-2">
+                                    <input type="hidden" name="doc_id" value="<?php echo $doc['id']; ?>">
+
+                                    <?php if ($doc['status'] !== 'Verified'): ?>
+                                    <button type="submit" name="action" value="verify_doc" class="btn btn-success btn-sm">
+                                        <i class="fas fa-check"></i> Verify
+                                    </button>
+                                    <?php endif; ?>
+
+                                    <?php if ($doc['status'] !== 'Rejected'): ?>
+                                    <div class="input-group input-group-sm" style="width: 200px;">
+                                        <input type="text" name="remarks" class="form-control" placeholder="Reject Reason">
+                                        <button type="submit" name="action" value="reject_doc" class="btn btn-outline-danger">Reject</button>
+                                    </div>
+                                    <?php endif; ?>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+
+            <?php if(empty($documents)): ?>
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-file-excel fa-3x mb-3"></i>
+                    <p>No documents uploaded yet.</p>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
