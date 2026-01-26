@@ -84,6 +84,37 @@ $sql = "CREATE TABLE IF NOT EXISTS student_status_logs (
 $pdo->exec($sql);
 echo "Table 'student_status_logs' created.\n";
 
+// Create convocation_events table
+$sql = "CREATE TABLE IF NOT EXISTS convocation_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    event_date DATE NOT NULL,
+    venue TEXT,
+    batch_year TEXT NOT NULL,
+    status TEXT DEFAULT 'Upcoming', -- Upcoming, Completed
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)";
+$pdo->exec($sql);
+echo "Table 'convocation_events' created.\n";
+
+// Create student_degrees table
+$sql = "CREATE TABLE IF NOT EXISTS student_degrees (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id INTEGER NOT NULL,
+    convocation_id INTEGER,
+    degree_serial_no TEXT UNIQUE NOT NULL,
+    issue_date DATE NOT NULL,
+    program_name TEXT NOT NULL,
+    division TEXT,
+    cgpa REAL,
+    generated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    file_path TEXT,
+    FOREIGN KEY (student_id) REFERENCES users(id),
+    FOREIGN KEY (convocation_id) REFERENCES convocation_events(id)
+)";
+$pdo->exec($sql);
+echo "Table 'student_degrees' created.\n";
+
 // Create international_details table
 $sql = "CREATE TABLE IF NOT EXISTS international_details (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

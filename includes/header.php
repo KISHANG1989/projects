@@ -72,6 +72,9 @@ if (isLoggedIn()) {
                     <li>
                         <a href="/modules/registrar/verification_list.php" class="ps-5">Verification Queue</a>
                     </li>
+                    <li>
+                        <a href="/modules/registrar/convocation/index.php" class="ps-5">Convocation</a>
+                    </li>
                 </ul>
             </li>
             <?php endif; ?>

@@ -1,0 +1,5 @@
+verification/*.png
+server.log
+server_pid.txt
+database/*.sqlite
+uploads/documents/*
