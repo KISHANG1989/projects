@@ -21,6 +21,7 @@ $modules = [
     ['name' => 'IQAC', 'url' => '#', 'icon' => 'chart-line', 'color' => 'secondary'],
     ['name' => 'HR', 'url' => '#', 'icon' => 'user-tie', 'color' => 'primary'],
     ['name' => 'Transport', 'url' => '#', 'icon' => 'bus', 'color' => 'dark'],
+    ['name' => 'Task Manager', 'url' => '/modules/task_manager/', 'icon' => 'tasks', 'color' => 'info'],
 ];
 
 ?>

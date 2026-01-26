@@ -80,7 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if updating existing profile (Edit Mode)
     $user_id = $_SESSION['user_id'];
     $edit_mode = false;
-    $stmt = $pdo->prepare("SELECT id, is_form_locked, edit_permissions FROM student_profiles WHERE user_id = ?");
+    // We need all current data for partial update
+    $stmt = $pdo->prepare("SELECT * FROM student_profiles WHERE user_id = ?");
     $stmt->execute([$user_id]);
     $existing_profile = $stmt->fetch();
 
@@ -92,18 +93,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $profile_id = $existing_profile['id'];
     }
 
-    // Extract Data
-    $full_name = sanitize($_POST['full_name']);
-    $dob = sanitize($_POST['dob']);
-    $address = sanitize($_POST['address']);
-    $nationality = sanitize($_POST['nationality']);
-    $category = sanitize($_POST['category']);
-    $course_applied = sanitize($_POST['course_applied']);
-    $previous_marks = sanitize($_POST['previous_marks']);
-    $abc_id = isset($_POST['abc_id']) ? sanitize($_POST['abc_id']) : null;
+    // Extract POST Data
+    $post_full_name = sanitize($_POST['full_name']);
+    $post_dob = sanitize($_POST['dob']);
+    $post_address = sanitize($_POST['address']);
+    $post_nationality = sanitize($_POST['nationality']);
+    $post_category = sanitize($_POST['category']);
+    $post_course_applied = sanitize($_POST['course_applied']);
+    $post_previous_marks = sanitize($_POST['previous_marks']);
+    $post_abc_id = isset($_POST['abc_id']) ? sanitize($_POST['abc_id']) : null;
 
-    // Extended Data (JSON)
-    $extended_data = [
+    $post_extended_data = [
         'family' => [
             'father_name' => sanitize($_POST['father_name'] ?? ''),
             'mother_name' => sanitize($_POST['mother_name'] ?? ''),
@@ -116,38 +116,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'declaration' => 'Agreed'
         ]
     ];
-    $extended_json = json_encode($extended_data);
 
     try {
         $pdo->beginTransaction();
 
         if ($edit_mode) {
-             // Only update allowed fields if locked, or all if unlocked?
-             // Simplification: Update everything provided. Real system would check permissions per field.
-             // We will assume the frontend restricted inputs, but for backend safety we should check permissions.
-             // For this task, we'll update the main fields and extended data.
+             // Secure Partial Update Logic
+             $perms = json_decode($existing_profile['edit_permissions'] ?? '[]', true);
+             $is_locked = (bool)$existing_profile['is_form_locked'];
+
+             // If unlocked completely (new draft or full unlock), allow all.
+             // If locked but has permissions, restrict.
+             // If unlocked (0) and permissions is set, restrict (Registrar Correction Mode).
+
+             // Check if permissions logic applies
+             $restrict = false;
+             if ($is_locked) {
+                 $restrict = true;
+             } elseif (!empty($perms)) {
+                 $restrict = true; // Unlocked for specific corrections
+             }
+
+             // Helper to check permission
+             $can_edit = function($group) use ($restrict, $perms) {
+                 if (!$restrict) return true; // Full access
+                 return in_array($group, $perms);
+             };
+
+             // Determine new values
+             $new_full_name = $can_edit('personal') ? $post_full_name : $existing_profile['full_name'];
+             $new_dob = $can_edit('personal') ? $post_dob : $existing_profile['dob'];
+             $new_address = $can_edit('personal') ? $post_address : $existing_profile['address'];
+             $new_nationality = $can_edit('personal') ? $post_nationality : $existing_profile['nationality'];
+             $new_category = $can_edit('personal') ? $post_category : $existing_profile['category'];
+
+             $new_course_applied = $can_edit('basic') ? $post_course_applied : $existing_profile['course_applied'];
+             $new_previous_marks = $can_edit('basic') ? $post_previous_marks : $existing_profile['previous_marks'];
+             $new_abc_id = $can_edit('basic') ? $post_abc_id : $existing_profile['abc_id'];
+
+             // Extended Data Merging
+             $current_extended = json_decode($existing_profile['extended_data'] ?? '{}', true);
+             $new_extended = $current_extended;
+
+             if ($can_edit('family')) {
+                 $new_extended['family'] = $post_extended_data['family'];
+             }
+             // NEP details? Put in basic for now as discussed
+             if ($can_edit('basic')) {
+                 $new_extended['awards'] = $post_extended_data['awards'];
+                 $new_extended['nep_details'] = $post_extended_data['nep_details'];
+                 $new_extended['regulatory'] = $post_extended_data['regulatory'];
+             }
+
+             $new_extended_json = json_encode($new_extended);
 
              $stmt = $pdo->prepare("UPDATE student_profiles SET full_name=?, dob=?, address=?, nationality=?, category=?, course_applied=?, previous_marks=?, abc_id=?, extended_data=? WHERE id=?");
-             $stmt->execute([$full_name, $dob, $address, $nationality, $category, $course_applied, $previous_marks, $abc_id, $extended_json, $profile_id]);
-
-             // If this was an authorized edit, lock it again?
-             // Requirement says: "After edited by student, authorisation and approval option... and lock the form again."
-             // So student edits -> status remains same (or maybe 'Pending Approval'?), Registrar approves -> Lock.
-             // Here we just save. We don't auto-lock.
+             $stmt->execute([$new_full_name, $new_dob, $new_address, $new_nationality, $new_category, $new_course_applied, $new_previous_marks, $new_abc_id, $new_extended_json, $profile_id]);
 
         } else {
              // New Registration
             $created_at = date('Y-m-d H:i:s');
-            // Generate Application No: APP-{YEAR}-{RANDOM}
             $app_no = 'APP-' . date('Y') . '-' . mt_rand(10000, 99999);
+            $extended_json = json_encode($post_extended_data);
 
             $stmt = $pdo->prepare("INSERT INTO student_profiles (user_id, full_name, dob, address, nationality, category, course_applied, previous_marks, abc_id, created_at, application_no, extended_data, is_form_locked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
-            // Lock immediately after submission
-            $stmt->execute([$user_id, $full_name, $dob, $address, $nationality, $category, $course_applied, $previous_marks, $abc_id, $created_at, $app_no, $extended_json]);
+            $stmt->execute([$user_id, $post_full_name, $post_dob, $post_address, $post_nationality, $post_category, $post_course_applied, $post_previous_marks, $post_abc_id, $created_at, $app_no, $extended_json]);
             $profile_id = $pdo->lastInsertId();
 
             // International Details
-            if ($nationality === 'International') {
+            if ($post_nationality === 'International') {
                 $passport = sanitize($_POST['passport_number']);
                 $visa = sanitize($_POST['visa_details']);
                 $country = sanitize($_POST['country_of_origin']);
@@ -157,48 +194,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // File Uploads (Common for new and edit)
+        // File Uploads (Check 'uploads' permission if editing)
         $upload_dir = __DIR__ . '/../../uploads/documents/';
 
-        $required_docs = ['photo', 'signature', 'id_proof', 'previous_marksheet'];
-        if ($nationality === 'International') {
-            $required_docs[] = 'passport_copy';
-            $required_docs[] = 'visa_copy';
+        // If edit mode, check permission for uploads
+        // Actually, file uploads are handled partly in 'update_doc' action above (replacements).
+        // But for *new* uploads (if any added later to form) or initial uploads:
+        // The wizard submits files in step 5.
+        // If editing, user might re-upload files via the main form (if I allowed it in UI).
+        // In current UI, files are in step 5.
+        // If 'uploads' permission is ON, we allow overwriting.
+
+        $process_uploads = true;
+        if ($edit_mode) {
+             $perms = json_decode($existing_profile['edit_permissions'] ?? '[]', true);
+             if ($existing_profile['is_form_locked'] || !empty($perms)) {
+                 if (!in_array('uploads', $perms)) {
+                     $process_uploads = false;
+                 }
+             }
         }
 
-        $allowed_extensions = ['jpg', 'jpeg', 'png', 'pdf'];
+        if ($process_uploads) {
+            $required_docs = ['photo', 'signature', 'id_proof', 'previous_marksheet'];
+            $nat = $edit_mode ? $new_nationality : $post_nationality; // Use determind nationality
 
-        foreach ($required_docs as $doc_key) {
-            if (isset($_FILES[$doc_key]) && $_FILES[$doc_key]['error'] === UPLOAD_ERR_OK) {
-                if ($_FILES[$doc_key]['size'] > 200 * 1024) {
-                    throw new Exception("File $doc_key too large. Max 200KB.");
-                }
-                $tmp_name = $_FILES[$doc_key]['tmp_name'];
-                $name = basename($_FILES[$doc_key]['name']);
-                $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+            if ($nat === 'International') {
+                $required_docs[] = 'passport_copy';
+                $required_docs[] = 'visa_copy';
+            }
 
-                if (!in_array($ext, $allowed_extensions)) {
-                    throw new Exception("Invalid file type for $doc_key. Allowed: " . implode(', ', $allowed_extensions));
-                }
+            $allowed_extensions = ['jpg', 'jpeg', 'png', 'pdf'];
 
-                $new_name = $user_id . '_' . $doc_key . '_' . time() . '.' . $ext;
-                $target = $upload_dir . $new_name;
-
-                if (move_uploaded_file($tmp_name, $target)) {
-                    // Check if doc exists
-                    $check = $pdo->prepare("SELECT id FROM documents WHERE user_id = ? AND doc_type = ?");
-                    $check->execute([$user_id, $doc_key]);
-                    if ($check->fetch()) {
-                        // Update
-                        $upd = $pdo->prepare("UPDATE documents SET file_path = ?, status = 'Pending' WHERE user_id = ? AND doc_type = ?");
-                        $upd->execute([$new_name, $user_id, $doc_key]);
-                    } else {
-                        // Insert
-                        $ins = $pdo->prepare("INSERT INTO documents (user_id, doc_type, file_path, status) VALUES (?, ?, ?, 'Pending')");
-                        $ins->execute([$user_id, $doc_key, $new_name]);
+            foreach ($required_docs as $doc_key) {
+                if (isset($_FILES[$doc_key]) && $_FILES[$doc_key]['error'] === UPLOAD_ERR_OK) {
+                    if ($_FILES[$doc_key]['size'] > 200 * 1024) {
+                        throw new Exception("File $doc_key too large. Max 200KB.");
                     }
-                } else {
-                    throw new Exception("Failed to upload " . $doc_key);
+                    $tmp_name = $_FILES[$doc_key]['tmp_name'];
+                    $name = basename($_FILES[$doc_key]['name']);
+                    $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+
+                    if (!in_array($ext, $allowed_extensions)) {
+                        throw new Exception("Invalid file type for $doc_key.");
+                    }
+
+                    $new_name = $user_id . '_' . $doc_key . '_' . time() . '.' . $ext;
+                    $target = $upload_dir . $new_name;
+
+                    if (move_uploaded_file($tmp_name, $target)) {
+                        // Check if doc exists
+                        $check = $pdo->prepare("SELECT id FROM documents WHERE user_id = ? AND doc_type = ?");
+                        $check->execute([$user_id, $doc_key]);
+                        if ($check->fetch()) {
+                            // Update
+                            $upd = $pdo->prepare("UPDATE documents SET file_path = ?, status = 'Pending' WHERE user_id = ? AND doc_type = ?");
+                            $upd->execute([$new_name, $user_id, $doc_key]);
+                        } else {
+                            // Insert
+                            $ins = $pdo->prepare("INSERT INTO documents (user_id, doc_type, file_path, status) VALUES (?, ?, ?, 'Pending')");
+                            $ins->execute([$user_id, $doc_key, $new_name]);
+                        }
+                    }
                 }
             }
         }
