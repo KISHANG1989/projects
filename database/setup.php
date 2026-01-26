@@ -67,6 +67,13 @@ try {
     echo "Added 'admission_mode' column to student_profiles.\n";
 }
 
+try {
+    $pdo->query("SELECT current_semester FROM student_profiles LIMIT 1");
+} catch (Exception $e) {
+    $pdo->exec("ALTER TABLE student_profiles ADD COLUMN current_semester INTEGER DEFAULT 1");
+    echo "Added 'current_semester' column to student_profiles.\n";
+}
+
 echo "Table 'student_profiles' created/updated.\n";
 
 // Create student_status_logs table
@@ -114,6 +121,69 @@ $sql = "CREATE TABLE IF NOT EXISTS student_degrees (
 )";
 $pdo->exec($sql);
 echo "Table 'student_degrees' created.\n";
+
+// --- EXAM MODULE TABLES ---
+
+// Subjects Table
+$sql = "CREATE TABLE IF NOT EXISTS subjects (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    subject_code TEXT UNIQUE NOT NULL,
+    subject_name TEXT NOT NULL,
+    program_name TEXT NOT NULL,
+    semester INTEGER NOT NULL,
+    credits INTEGER NOT NULL DEFAULT 3,
+    type TEXT DEFAULT 'Core', -- Core, Elective, Practical
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)";
+$pdo->exec($sql);
+echo "Table 'subjects' created.\n";
+
+// Exams Table
+$sql = "CREATE TABLE IF NOT EXISTS exams (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    session TEXT NOT NULL,
+    program_name TEXT NOT NULL,
+    semester INTEGER NOT NULL,
+    status TEXT DEFAULT 'Upcoming', -- Upcoming, Ongoing, Completed, Results Declared
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)";
+$pdo->exec($sql);
+echo "Table 'exams' created.\n";
+
+// Exam Timetable
+$sql = "CREATE TABLE IF NOT EXISTS exam_timetable (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    exam_id INTEGER NOT NULL,
+    subject_id INTEGER NOT NULL,
+    exam_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    FOREIGN KEY (exam_id) REFERENCES exams(id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(id)
+)";
+$pdo->exec($sql);
+echo "Table 'exam_timetable' created.\n";
+
+// Student Marks
+$sql = "CREATE TABLE IF NOT EXISTS student_marks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id INTEGER NOT NULL,
+    exam_id INTEGER NOT NULL,
+    subject_id INTEGER NOT NULL,
+    internal_marks REAL DEFAULT 0,
+    external_marks REAL DEFAULT 0,
+    total_marks REAL DEFAULT 0,
+    grade TEXT,
+    grade_point INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES users(id),
+    FOREIGN KEY (exam_id) REFERENCES exams(id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(id),
+    UNIQUE(student_id, exam_id, subject_id)
+)";
+$pdo->exec($sql);
+echo "Table 'student_marks' created.\n";
 
 // Create international_details table
 $sql = "CREATE TABLE IF NOT EXISTS international_details (

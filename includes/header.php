@@ -87,6 +87,14 @@ if (isLoggedIn()) {
             </li>
             <?php endif; ?>
 
+            <?php if (hasRole('faculty')): ?>
+            <li>
+                <a href="/modules/exam/marks_entry.php">
+                    <i class="fas fa-marker me-2"></i> Marks Entry
+                </a>
+            </li>
+            <?php endif; ?>
+
             <?php if (isLoggedIn() && !hasRole('student')): ?>
              <li>
                 <a href="/modules/task_manager/index.php">
@@ -100,11 +108,26 @@ if (isLoggedIn()) {
                     <i class="fas fa-book me-2"></i> Academic (ABC)
                 </a>
             </li>
+            <?php if (hasRole('admin') || hasRole('registrar')): ?>
             <li>
-                <a href="#">
-                    <i class="fas fa-edit me-2"></i> Exams
+                <a href="/modules/exam/index.php">
+                    <i class="fas fa-edit me-2"></i> Examination
                 </a>
             </li>
+            <?php endif; ?>
+
+            <?php if (hasRole('student')): ?>
+            <li>
+                <a href="/modules/exam/admit_card.php">
+                    <i class="fas fa-id-card me-2"></i> Admit Card
+                </a>
+            </li>
+            <li>
+                <a href="/modules/exam/results.php">
+                    <i class="fas fa-poll-h me-2"></i> Results
+                </a>
+            </li>
+            <?php endif; ?>
         </ul>
     </nav>
     <?php endif; ?>

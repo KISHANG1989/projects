@@ -23,9 +23,18 @@ require_once __DIR__ . '/../../includes/header.php';
     <div class="col-md-4">
         <div class="card">
             <div class="card-body">
+                <h5 class="card-title">Subject Management</h5>
+                <p class="card-text">Add or edit subjects and credits.</p>
+                <a href="manage_subjects.php" class="btn btn-primary">Manage Subjects</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
                 <h5 class="card-title">Exam Scheduling</h5>
-                <p class="card-text">Create and manage examination timetables.</p>
-                <a href="#" class="btn btn-primary">Manage Schedule</a>
+                <p class="card-text">Create exams and manage timetables.</p>
+                <a href="manage_exams.php" class="btn btn-primary">Manage Exams</a>
             </div>
         </div>
     </div>

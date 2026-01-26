@@ -3,3 +3,8 @@ server.log
 server_pid.txt
 database/*.sqlite
 uploads/documents/*
+verification/*.png
+verification/debug_*.png
+verification/*.png
+server.log
+verification_output.txt
