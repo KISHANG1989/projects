@@ -1,0 +1,109 @@
+[Mon Jan 26 00:43:02 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Mon Jan 26 00:43:31 2026] [::1]:32812 Accepted
+[Mon Jan 26 00:43:31 2026] [::1]:32812 [200]: GET /login.php
+[Mon Jan 26 00:43:31 2026] [::1]:32812 Closing
+[Mon Jan 26 00:43:31 2026] [::1]:32822 Accepted
+[Mon Jan 26 00:43:31 2026] [::1]:32822 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:43:31 2026] [::1]:32822 Closing
+[Mon Jan 26 00:43:32 2026] [::1]:32832 Accepted
+[Mon Jan 26 00:43:32 2026] [::1]:32832 [302]: POST /login.php
+[Mon Jan 26 00:43:32 2026] [::1]:32832 Closing
+[Mon Jan 26 00:43:32 2026] [::1]:32842 Accepted
+[Mon Jan 26 00:43:32 2026] [::1]:32842 [200]: GET /
+[Mon Jan 26 00:43:32 2026] [::1]:32842 Closing
+[Mon Jan 26 00:43:32 2026] [::1]:32856 Accepted
+[Mon Jan 26 00:43:32 2026] [::1]:32856 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:43:32 2026] [::1]:32856 Closing
+[Mon Jan 26 00:43:33 2026] [::1]:32870 Accepted
+[Mon Jan 26 00:43:33 2026] [::1]:32870 [200]: GET /modules/registrar/registration.php
+[Mon Jan 26 00:43:33 2026] [::1]:32870 Closing
+[Mon Jan 26 00:43:33 2026] [::1]:32884 Accepted
+[Mon Jan 26 00:43:33 2026] [::1]:32884 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:43:33 2026] [::1]:32884 Closing
+[Mon Jan 26 00:43:33 2026] [::1]:32900 Accepted
+[Mon Jan 26 00:43:33 2026] [::1]:32900 [302]: GET /logout.php
+[Mon Jan 26 00:43:33 2026] [::1]:32900 Closing
+[Mon Jan 26 00:43:33 2026] [::1]:32902 Accepted
+[Mon Jan 26 00:43:33 2026] [::1]:32902 [200]: GET /login.php
+[Mon Jan 26 00:43:33 2026] [::1]:32902 Closing
+[Mon Jan 26 00:43:33 2026] [::1]:32912 Accepted
+[Mon Jan 26 00:43:33 2026] [::1]:32912 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:43:33 2026] [::1]:32912 Closing
+[Mon Jan 26 00:43:33 2026] [::1]:32926 Accepted
+[Mon Jan 26 00:43:33 2026] [::1]:32926 [200]: GET /login.php
+[Mon Jan 26 00:43:33 2026] [::1]:32926 Closing
+[Mon Jan 26 00:43:33 2026] [::1]:32934 Accepted
+[Mon Jan 26 00:43:33 2026] [::1]:32934 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:43:33 2026] [::1]:32934 Closing
+[Mon Jan 26 00:43:33 2026] [::1]:32944 Accepted
+[Mon Jan 26 00:43:33 2026] [::1]:32944 [302]: POST /login.php
+[Mon Jan 26 00:43:33 2026] [::1]:32944 Closing
+[Mon Jan 26 00:43:33 2026] [::1]:32954 Accepted
+[Mon Jan 26 00:43:33 2026] [::1]:32954 [200]: GET /
+[Mon Jan 26 00:43:33 2026] [::1]:32954 Closing
+[Mon Jan 26 00:43:33 2026] [::1]:32968 Accepted
+[Mon Jan 26 00:43:33 2026] [::1]:32968 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:43:33 2026] [::1]:32968 Closing
+[Mon Jan 26 00:43:34 2026] [::1]:32970 Accepted
+[Mon Jan 26 00:43:34 2026] [::1]:32970 [200]: GET /modules/registrar/verification_list.php
+[Mon Jan 26 00:43:34 2026] [::1]:32970 Closing
+[Mon Jan 26 00:43:34 2026] [::1]:32974 Accepted
+[Mon Jan 26 00:43:34 2026] [::1]:32974 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:43:34 2026] [::1]:32974 Closing
+[Mon Jan 26 00:44:04 2026] [::1]:49020 Accepted
+[Mon Jan 26 00:44:04 2026] [::1]:49020 [200]: GET /login.php
+[Mon Jan 26 00:44:04 2026] [::1]:49020 Closing
+[Mon Jan 26 00:44:04 2026] [::1]:49022 Accepted
+[Mon Jan 26 00:44:04 2026] [::1]:49022 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:44:04 2026] [::1]:49022 Closing
+[Mon Jan 26 00:44:04 2026] [::1]:49034 Accepted
+[Mon Jan 26 00:44:04 2026] [::1]:49034 [302]: POST /login.php
+[Mon Jan 26 00:44:04 2026] [::1]:49034 Closing
+[Mon Jan 26 00:44:04 2026] [::1]:49038 Accepted
+[Mon Jan 26 00:44:04 2026] [::1]:49038 [200]: GET /
+[Mon Jan 26 00:44:04 2026] [::1]:49038 Closing
+[Mon Jan 26 00:44:04 2026] [::1]:49050 Accepted
+[Mon Jan 26 00:44:04 2026] [::1]:49050 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:44:04 2026] [::1]:49050 Closing
+[Mon Jan 26 00:44:05 2026] [::1]:49058 Accepted
+[Mon Jan 26 00:44:05 2026] [::1]:49058 [200]: GET /modules/registrar/registration.php
+[Mon Jan 26 00:44:05 2026] [::1]:49058 Closing
+[Mon Jan 26 00:44:05 2026] [::1]:49062 Accepted
+[Mon Jan 26 00:44:05 2026] [::1]:49062 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:44:05 2026] [::1]:49062 Closing
+[Mon Jan 26 00:44:05 2026] [::1]:52314 Accepted
+[Mon Jan 26 00:44:05 2026] [::1]:52314 [302]: GET /logout.php
+[Mon Jan 26 00:44:05 2026] [::1]:52314 Closing
+[Mon Jan 26 00:44:05 2026] [::1]:52324 Accepted
+[Mon Jan 26 00:44:05 2026] [::1]:52324 [200]: GET /login.php
+[Mon Jan 26 00:44:05 2026] [::1]:52324 Closing
+[Mon Jan 26 00:44:05 2026] [::1]:52336 Accepted
+[Mon Jan 26 00:44:05 2026] [::1]:52336 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:44:05 2026] [::1]:52336 Closing
+[Mon Jan 26 00:44:05 2026] [::1]:52342 Accepted
+[Mon Jan 26 00:44:05 2026] [::1]:52342 [200]: GET /login.php
+[Mon Jan 26 00:44:05 2026] [::1]:52342 Closing
+[Mon Jan 26 00:44:05 2026] [::1]:52356 Accepted
+[Mon Jan 26 00:44:05 2026] [::1]:52356 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:44:05 2026] [::1]:52356 Closing
+[Mon Jan 26 00:44:05 2026] [::1]:52364 Accepted
+[Mon Jan 26 00:44:05 2026] [::1]:52364 [302]: POST /login.php
+[Mon Jan 26 00:44:05 2026] [::1]:52364 Closing
+[Mon Jan 26 00:44:05 2026] [::1]:52376 Accepted
+[Mon Jan 26 00:44:05 2026] [::1]:52376 [200]: GET /
+[Mon Jan 26 00:44:05 2026] [::1]:52376 Closing
+[Mon Jan 26 00:44:05 2026] [::1]:52390 Accepted
+[Mon Jan 26 00:44:05 2026] [::1]:52390 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:44:05 2026] [::1]:52390 Closing
+[Mon Jan 26 00:44:06 2026] [::1]:52398 Accepted
+[Mon Jan 26 00:44:06 2026] [::1]:52398 [200]: GET /modules/registrar/verification_list.php
+[Mon Jan 26 00:44:06 2026] [::1]:52398 Closing
+[Mon Jan 26 00:44:06 2026] [::1]:52400 Accepted
+[Mon Jan 26 00:44:06 2026] [::1]:52400 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:44:06 2026] [::1]:52400 Closing
+[Mon Jan 26 00:44:06 2026] [::1]:52402 Accepted
+[Mon Jan 26 00:44:06 2026] [::1]:52402 [200]: GET /modules/registrar/view_student.php?id=3
+[Mon Jan 26 00:44:06 2026] [::1]:52402 Closing
+[Mon Jan 26 00:44:06 2026] [::1]:52406 Accepted
+[Mon Jan 26 00:44:06 2026] [::1]:52406 [200]: GET /assets/css/modern.css
+[Mon Jan 26 00:44:06 2026] [::1]:52406 Closing

@@ -18,30 +18,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">Login to ERP</div>
-            <div class="card-body">
-                <?php if ($error): ?>
-                    <div class="alert alert-danger"><?php echo $error; ?></div>
-                <?php endif; ?>
-                <form method="POST" action="">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
-                </form>
+<div class="card login-card p-4" style="width: 400px;">
+    <div class="card-body text-center">
+        <h2 class="mb-4 fw-bold text-primary"><i class="fas fa-university"></i> Univ ERP</h2>
+        <p class="text-muted mb-4">Sign in to access your portal</p>
+
+        <?php if ($error): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <?php echo $error; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-            <div class="card-footer text-muted text-center">
-                 Default: admin / admin123
+        <?php endif; ?>
+
+        <form method="POST" action="">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                <label for="username">Username</label>
             </div>
-        </div>
+            <div class="form-floating mb-4">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                <label for="password">Password</label>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-2 fs-5 shadow-sm">Sign In</button>
+        </form>
+    </div>
+    <div class="card-footer bg-white border-0 text-center text-muted mt-3">
+        <small>System developed for NEP 2020 Compliance</small>
     </div>
 </div>
 
