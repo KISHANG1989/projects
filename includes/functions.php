@@ -5,6 +5,10 @@ function sanitize($data) {
 }
 
 function redirect($url) {
+    if (defined('TEST_MODE') && TEST_MODE) {
+        echo "Redirecting to: " . $url . "\n";
+        return;
+    }
     header("Location: " . $url);
     exit();
 }

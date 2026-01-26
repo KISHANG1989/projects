@@ -25,6 +25,17 @@ require_once __DIR__ . '/functions.php';
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <?php if (isLoggedIn()): ?>
+                        <li class="nav-item"><a class="nav-link text-white" href="/">Dashboard</a></li>
+                        <?php if (hasRole('registrar') || hasRole('admin')): ?>
+                             <li class="nav-item"><a class="nav-link text-white" href="/modules/registrar/verification_list.php">Verification Queue</a></li>
+                        <?php endif; ?>
+                        <?php if (hasRole('student')): ?>
+                             <li class="nav-item"><a class="nav-link text-white" href="/modules/registrar/registration.php">Admission Form</a></li>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </ul>
                 <ul class="navbar-nav ms-auto">
                     <?php if (isLoggedIn()): ?>
                         <li class="nav-item"><span class="nav-link text-white">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?> (<?php echo htmlspecialchars($_SESSION['role']); ?>)</span></li>

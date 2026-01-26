@@ -17,6 +17,47 @@ $sql = "CREATE TABLE IF NOT EXISTS users (
 $pdo->exec($sql);
 echo "Table 'users' created.\n";
 
+// Create student_profiles table
+$sql = "CREATE TABLE IF NOT EXISTS student_profiles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    full_name TEXT NOT NULL,
+    dob DATE,
+    address TEXT,
+    nationality TEXT NOT NULL DEFAULT 'Indian',
+    category TEXT,
+    enrollment_status TEXT DEFAULT 'Pending',
+    FOREIGN KEY (user_id) REFERENCES users(id)
+)";
+$pdo->exec($sql);
+echo "Table 'student_profiles' created.\n";
+
+// Create international_details table
+$sql = "CREATE TABLE IF NOT EXISTS international_details (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_profile_id INTEGER NOT NULL,
+    passport_number TEXT,
+    visa_details TEXT,
+    country_of_origin TEXT,
+    FOREIGN KEY (student_profile_id) REFERENCES student_profiles(id)
+)";
+$pdo->exec($sql);
+echo "Table 'international_details' created.\n";
+
+// Create documents table
+$sql = "CREATE TABLE IF NOT EXISTS documents (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    doc_type TEXT NOT NULL,
+    file_path TEXT NOT NULL,
+    status TEXT DEFAULT 'Pending',
+    remarks TEXT,
+    uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+)";
+$pdo->exec($sql);
+echo "Table 'documents' created.\n";
+
 // Seed users
 $users = [
     ['username' => 'admin', 'password' => 'admin123', 'role' => 'admin'],
