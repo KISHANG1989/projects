@@ -103,6 +103,87 @@ require_once __DIR__ . '/../../includes/header.php';
         </div>
     </div>
 
+    <!-- Status Management Card -->
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+             <span class="fw-bold"><i class="fas fa-user-tag me-2"></i>Student Status Management</span>
+             <?php
+                 $currStatus = $profile['student_status'] ?? 'Provisional';
+                 $statusColor = match($currStatus) {
+                     'Active', 'Admitted' => 'success',
+                     'Deactive', 'Suspended', 'Detained' => 'danger',
+                     'Alumni' => 'info',
+                     default => 'warning'
+                 };
+             ?>
+             <span class="badge bg-<?php echo $statusColor; ?> fs-6"><?php echo htmlspecialchars($currStatus); ?></span>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="update_status.php" class="row g-3 align-items-end">
+                <input type="hidden" name="student_id" value="<?php echo $id; ?>">
+
+                <div class="col-md-4">
+                    <label class="form-label">Change Status To:</label>
+                    <select name="status" class="form-select" required>
+                        <option value="Provisional" <?php echo $currStatus == 'Provisional' ? 'selected' : ''; ?>>Provisional</option>
+                        <option value="Admitted" <?php echo $currStatus == 'Admitted' ? 'selected' : ''; ?>>Admitted</option>
+                        <option value="Active" <?php echo $currStatus == 'Active' ? 'selected' : ''; ?>>Active</option>
+                        <option value="Deactive" <?php echo $currStatus == 'Deactive' ? 'selected' : ''; ?>>Deactive</option>
+                        <option value="Suspended" <?php echo $currStatus == 'Suspended' ? 'selected' : ''; ?>>Suspended</option>
+                        <option value="Detained" <?php echo $currStatus == 'Detained' ? 'selected' : ''; ?>>Detained</option>
+                        <option value="Alumni" <?php echo $currStatus == 'Alumni' ? 'selected' : ''; ?>>Alumni</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Remarks / Reason</label>
+                    <input type="text" name="remarks" class="form-control" placeholder="Reason for status change..." required>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">Update</button>
+                </div>
+            </form>
+
+            <hr class="my-4">
+
+            <h6 class="fw-bold mb-3 small text-uppercase text-muted">Status History Log</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped small">
+                    <thead>
+                        <tr>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Changed By</th>
+                            <th>Remarks</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                            $logStmt = $pdo->prepare("SELECT l.*, u.username FROM student_status_logs l JOIN users u ON l.changed_by = u.id WHERE student_profile_id = ? ORDER BY l.changed_at DESC");
+                            $logStmt->execute([$id]);
+                            $logs = $logStmt->fetchAll();
+
+                            if (count($logs) > 0):
+                                foreach($logs as $log):
+                        ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($log['old_status']); ?></td>
+                            <td class="fw-bold"><?php echo htmlspecialchars($log['new_status']); ?></td>
+                            <td><?php echo htmlspecialchars($log['username']); ?></td>
+                            <td><?php echo htmlspecialchars($log['remarks']); ?></td>
+                            <td><?php echo date('d M Y, h:i A', strtotime($log['changed_at'])); ?></td>
+                        </tr>
+                        <?php endforeach; else: ?>
+                        <tr><td colspan="5" class="text-center text-muted">No status changes recorded.</td></tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <div class="mt-4 text-center">
          <iframe src="view_profile_printable.php?id=<?php echo $id; ?>" style="width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 4px;" title="Profile Preview"></iframe>
     </div>

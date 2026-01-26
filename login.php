@@ -41,6 +41,9 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             <button type="submit" class="btn btn-primary w-100 py-2 fs-5 shadow-sm">Sign In</button>
         </form>
+        <div class="mt-3">
+             <a href="register.php" class="text-decoration-none">New Student? Register here</a>
+        </div>
     </div>
     <div class="card-footer bg-white border-0 text-center text-muted mt-3">
         <small>System developed for NEP 2020 Compliance</small>

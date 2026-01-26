@@ -51,7 +51,38 @@ $sql = "CREATE TABLE IF NOT EXISTS student_profiles (
     FOREIGN KEY (user_id) REFERENCES users(id)
 )";
 $pdo->exec($sql);
-echo "Table 'student_profiles' created.\n";
+
+// Migration for new columns in student_profiles
+try {
+    $pdo->query("SELECT student_status FROM student_profiles LIMIT 1");
+} catch (Exception $e) {
+    $pdo->exec("ALTER TABLE student_profiles ADD COLUMN student_status TEXT DEFAULT 'Provisional'");
+    echo "Added 'student_status' column to student_profiles.\n";
+}
+
+try {
+    $pdo->query("SELECT admission_mode FROM student_profiles LIMIT 1");
+} catch (Exception $e) {
+    $pdo->exec("ALTER TABLE student_profiles ADD COLUMN admission_mode TEXT DEFAULT 'Regular'");
+    echo "Added 'admission_mode' column to student_profiles.\n";
+}
+
+echo "Table 'student_profiles' created/updated.\n";
+
+// Create student_status_logs table
+$sql = "CREATE TABLE IF NOT EXISTS student_status_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_profile_id INTEGER NOT NULL,
+    old_status TEXT,
+    new_status TEXT NOT NULL,
+    changed_by INTEGER NOT NULL,
+    remarks TEXT,
+    changed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_profile_id) REFERENCES student_profiles(id),
+    FOREIGN KEY (changed_by) REFERENCES users(id)
+)";
+$pdo->exec($sql);
+echo "Table 'student_status_logs' created.\n";
 
 // Create international_details table
 $sql = "CREATE TABLE IF NOT EXISTS international_details (

@@ -19,22 +19,19 @@ $programs = $pdo->query("SELECT DISTINCT course_applied FROM student_profiles WH
 $query = "SELECT sp.*, u.username FROM student_profiles sp JOIN users u ON sp.user_id = u.id WHERE 1=1";
 $params = [];
 
-// Filter by Status (Default to Pending if not searching, or keep logic simple: View All or just Pending?)
-// The original requirement was "Verification Queue", usually implying Pending.
-// However, search might be used to find processed students too.
-// Let's stick to the previous behavior: Only Pending, but maybe the user wants to search *anyone*?
-// The prompt says "To search and view the documents", implying they might want to see anyone.
-// But the page title is "Verification Queue".
-// Let's keep "enrollment_status = 'Pending'" for now as per the page intent, unless the user removes that constraint?
-// Actually, usually a search overrides the "Pending" filter if you want to find a specific student.
-// But let's act safely. The user said "Registrar staff view... To search and view the documents".
-// If I can't find a student because they are already Approved, that's annoying.
-// But this page is `verification_list.php`.
-// Let's keep the Pending filter for now, but allow the user to clear it or maybe add a Status filter?
-// Re-reading code: The original query had `WHERE sp.enrollment_status = 'Pending'`.
-// I will keep that constraint for the "Queue" concept.
+// Filters
+$enroll_status = $_GET['enroll_status'] ?? 'Pending';
+$stud_status = $_GET['stud_status'] ?? '';
 
-$query .= " AND sp.enrollment_status = 'Pending'";
+if (!empty($enroll_status) && $enroll_status !== 'All') {
+    $query .= " AND sp.enrollment_status = ?";
+    $params[] = $enroll_status;
+}
+
+if (!empty($stud_status)) {
+    $query .= " AND sp.student_status = ?";
+    $params[] = $stud_status;
+}
 
 if (!empty($_GET['year'])) {
     $query .= " AND strftime('%Y', sp.created_at) = ?";
@@ -46,7 +43,8 @@ if (!empty($_GET['program'])) {
 }
 if (!empty($_GET['search'])) {
     $term = '%' . $_GET['search'] . '%';
-    $query .= " AND (u.username LIKE ? OR sp.roll_number LIKE ?)";
+    $query .= " AND (u.username LIKE ? OR sp.roll_number LIKE ? OR sp.full_name LIKE ?)";
+    $params[] = $term;
     $params[] = $term;
     $params[] = $term;
 }
@@ -58,15 +56,33 @@ $students = $stmt->fetchAll();
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold">Verification Queue</h2>
-        <p class="text-muted">Review and approve pending student applications.</p>
+        <h2 class="fw-bold">Student Management</h2>
+        <p class="text-muted">Manage applications, admissions, and student statuses.</p>
     </div>
-    <span class="badge bg-primary rounded-pill px-3 py-2"><?php echo count($students); ?> Pending</span>
+    <span class="badge bg-primary rounded-pill px-3 py-2"><?php echo count($students); ?> Records</span>
 </div>
 
 <form method="GET" class="row g-2 mb-4 align-items-center">
     <div class="col-auto">
-        <label class="visually-hidden">Year</label>
+        <select name="enroll_status" class="form-select" onchange="this.form.submit()">
+            <option value="All" <?php echo ($enroll_status == 'All') ? 'selected' : ''; ?>>All Applications</option>
+            <option value="Pending" <?php echo ($enroll_status == 'Pending') ? 'selected' : ''; ?>>Pending Approval</option>
+            <option value="Approved" <?php echo ($enroll_status == 'Approved') ? 'selected' : ''; ?>>Approved</option>
+            <option value="Rejected" <?php echo ($enroll_status == 'Rejected') ? 'selected' : ''; ?>>Rejected</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="stud_status" class="form-select" onchange="this.form.submit()">
+            <option value="">All Statuses</option>
+            <option value="Provisional" <?php echo ($stud_status == 'Provisional') ? 'selected' : ''; ?>>Provisional</option>
+            <option value="Admitted" <?php echo ($stud_status == 'Admitted') ? 'selected' : ''; ?>>Admitted</option>
+            <option value="Active" <?php echo ($stud_status == 'Active') ? 'selected' : ''; ?>>Active</option>
+            <option value="Deactive" <?php echo ($stud_status == 'Deactive') ? 'selected' : ''; ?>>Deactive</option>
+            <option value="Suspended" <?php echo ($stud_status == 'Suspended') ? 'selected' : ''; ?>>Suspended</option>
+            <option value="Alumni" <?php echo ($stud_status == 'Alumni') ? 'selected' : ''; ?>>Alumni</option>
+        </select>
+    </div>
+    <div class="col-auto">
         <select name="year" class="form-select" onchange="this.form.submit()">
             <option value="">All Years</option>
             <?php foreach($years as $y): ?>
@@ -75,7 +91,6 @@ $students = $stmt->fetchAll();
         </select>
     </div>
     <div class="col-auto">
-         <label class="visually-hidden">Program</label>
          <select name="program" class="form-select" onchange="this.form.submit()">
             <option value="">All Programs</option>
             <?php foreach($programs as $p): ?>
@@ -85,7 +100,7 @@ $students = $stmt->fetchAll();
     </div>
     <div class="col-auto">
         <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Search UID / Roll No" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+            <input type="text" name="search" class="form-control" placeholder="Name / UID / Roll No" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
             <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
         </div>
     </div>
@@ -101,10 +116,11 @@ $students = $stmt->fetchAll();
                 <thead class="bg-light">
                     <tr>
                         <th class="ps-4">ID</th>
-                        <th>Name</th>
+                        <th>Name / UID</th>
                         <th>Nationality</th>
-                        <th>Category</th>
                         <th>Program</th>
+                        <th>Admission</th>
+                        <th>Status</th>
                         <th class="text-end pe-4">Action</th>
                     </tr>
                 </thead>
@@ -112,7 +128,10 @@ $students = $stmt->fetchAll();
                     <?php foreach ($students as $student): ?>
                     <tr>
                         <td class="ps-4 text-muted">#<?php echo htmlspecialchars($student['id']); ?></td>
-                        <td class="fw-bold"><?php echo htmlspecialchars($student['full_name']); ?></td>
+                        <td>
+                            <div class="fw-bold"><?php echo htmlspecialchars($student['full_name']); ?></div>
+                            <small class="text-muted"><?php echo htmlspecialchars($student['username']); ?></small>
+                        </td>
                         <td>
                             <?php if($student['nationality'] === 'International'): ?>
                                 <span class="badge bg-info text-dark">International</span>
@@ -120,8 +139,34 @@ $students = $stmt->fetchAll();
                                 <span class="badge bg-secondary">Indian</span>
                             <?php endif; ?>
                         </td>
-                        <td><?php echo htmlspecialchars($student['category']); ?></td>
-                        <td><?php echo htmlspecialchars($student['course_applied'] ?? '-'); ?></td>
+                        <td>
+                            <?php echo htmlspecialchars($student['course_applied'] ?? '-'); ?>
+                            <?php if(($student['admission_mode'] ?? 'Regular') === 'Lateral Entry'): ?>
+                                <span class="badge bg-warning text-dark ms-1" style="font-size: 0.6rem;">Lateral</span>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                             <?php
+                                $admBadge = match($student['enrollment_status']) {
+                                    'Approved' => 'bg-success',
+                                    'Rejected' => 'bg-danger',
+                                    default => 'bg-warning text-dark'
+                                };
+                            ?>
+                            <span class="badge <?php echo $admBadge; ?>"><?php echo htmlspecialchars($student['enrollment_status']); ?></span>
+                        </td>
+                        <td>
+                            <?php
+                                 $currStatus = $student['student_status'] ?? 'Provisional';
+                                 $stBadge = match($currStatus) {
+                                     'Active', 'Admitted' => 'bg-success',
+                                     'Deactive', 'Suspended' => 'bg-danger',
+                                     'Alumni' => 'bg-info',
+                                     default => 'bg-light text-dark border'
+                                 };
+                             ?>
+                             <span class="badge <?php echo $stBadge; ?>"><?php echo htmlspecialchars($currStatus); ?></span>
+                        </td>
                         <td class="text-end pe-4">
                             <div class="btn-group btn-group-sm shadow-sm">
                                 <a href="view_student.php?id=<?php echo $student['id']; ?>" class="btn btn-outline-primary" title="View Profile">

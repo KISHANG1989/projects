@@ -243,6 +243,14 @@ if ($profile) {
                             <label class="form-label">Admission Year</label>
                             <input type="text" class="form-control" value="<?php echo date('Y'); ?>" disabled>
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Admission Mode <span class="text-danger">*</span></label>
+                            <select name="admission_mode" class="form-select" onchange="toggleAdmissionMode(this.value)" required>
+                                <option value="Regular">Regular Admission</option>
+                                <option value="Lateral Entry">Lateral Entry (Direct 2nd Year)</option>
+                                <option value="Transfer">Transfer / Migration</option>
+                            </select>
+                        </div>
                          <div class="col-md-6">
                             <label class="form-label">School / Department</label>
                             <select class="form-select">
@@ -263,9 +271,29 @@ if ($profile) {
                                 <option value="PhD">PhD</option>
                             </select>
                         </div>
-                         <div class="col-md-6">
-                            <label class="form-label">Previous Marks (%) <span class="text-danger">*</span></label>
-                            <input type="text" name="previous_marks" class="form-control" placeholder="e.g. 85%" required>
+
+                        <!-- Dynamic Qualification Section -->
+                        <div class="col-12 mt-3">
+                            <div class="card bg-light border-0">
+                                <div class="card-body">
+                                    <h6 class="text-primary fw-bold mb-3" id="qual_title">Class 12th / Equivalent Details</h6>
+
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label" id="marks_label">Previous Marks (%) <span class="text-danger">*</span></label>
+                                            <input type="text" name="previous_marks" class="form-control" placeholder="e.g. 85%" required>
+                                        </div>
+                                        <div class="col-md-6" id="diploma_field" style="display:none;">
+                                            <label class="form-label">Diploma/University Registration No.</label>
+                                            <input type="text" name="diploma_reg_no" class="form-control" placeholder="If applicable">
+                                        </div>
+                                    </div>
+
+                                    <div id="lateral_info" class="alert alert-warning mt-3 mb-0 small" style="display:none;">
+                                        <i class="fas fa-info-circle me-1"></i> You have selected <strong>Lateral Entry</strong>. Please ensure you upload your <strong>Diploma Certificate</strong> in the uploads section instead of Class 12th Marksheet.
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="text-end mt-4">
@@ -447,6 +475,25 @@ if ($profile) {
             document.getElementById('intlFields').classList.remove('d-none');
         } else {
             document.getElementById('intlFields').classList.add('d-none');
+        }
+    }
+
+    function toggleAdmissionMode(mode) {
+        const title = document.getElementById('qual_title');
+        const lateralInfo = document.getElementById('lateral_info');
+        const diplomaField = document.getElementById('diploma_field');
+        const marksLabel = document.getElementById('marks_label');
+
+        if (mode === 'Lateral Entry') {
+            title.innerText = 'Diploma / Polytechnic Details';
+            lateralInfo.style.display = 'block';
+            diplomaField.style.display = 'block';
+            marksLabel.innerText = 'Diploma Agg. Percentage';
+        } else {
+            title.innerText = 'Class 12th / Equivalent Details';
+            lateralInfo.style.display = 'none';
+            diplomaField.style.display = 'none';
+            marksLabel.innerText = 'Previous Marks (%)';
         }
     }
 </script>

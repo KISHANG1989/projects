@@ -3,6 +3,12 @@ require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/functions.php';
 
 requireLogin();
+
+if (hasRole('student')) {
+    header("Location: registration.php");
+    exit;
+}
+
 if (!hasRole('registrar') && !hasRole('admin')) { redirect('/'); }
 
 require_once __DIR__ . '/../../includes/header.php';

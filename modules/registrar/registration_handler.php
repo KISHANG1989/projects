@@ -101,9 +101,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $post_category = sanitize($_POST['category']);
     $post_course_applied = sanitize($_POST['course_applied']);
     $post_previous_marks = sanitize($_POST['previous_marks']);
+    $post_admission_mode = sanitize($_POST['admission_mode'] ?? 'Regular');
     $post_abc_id = isset($_POST['abc_id']) ? sanitize($_POST['abc_id']) : null;
 
     $post_extended_data = [
+        'diploma_reg_no' => sanitize($_POST['diploma_reg_no'] ?? ''),
         'family' => [
             'father_name' => sanitize($_POST['father_name'] ?? ''),
             'mother_name' => sanitize($_POST['mother_name'] ?? ''),
@@ -152,6 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
              $new_course_applied = $can_edit('basic') ? $post_course_applied : $existing_profile['course_applied'];
              $new_previous_marks = $can_edit('basic') ? $post_previous_marks : $existing_profile['previous_marks'];
+             $new_admission_mode = $can_edit('basic') ? $post_admission_mode : ($existing_profile['admission_mode'] ?? 'Regular');
              $new_abc_id = $can_edit('basic') ? $post_abc_id : $existing_profile['abc_id'];
 
              // Extended Data Merging
@@ -163,6 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
              }
              // NEP details? Put in basic for now as discussed
              if ($can_edit('basic')) {
+                 $new_extended['diploma_reg_no'] = $post_extended_data['diploma_reg_no'];
                  $new_extended['awards'] = $post_extended_data['awards'];
                  $new_extended['nep_details'] = $post_extended_data['nep_details'];
                  $new_extended['regulatory'] = $post_extended_data['regulatory'];
@@ -170,8 +174,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
              $new_extended_json = json_encode($new_extended);
 
-             $stmt = $pdo->prepare("UPDATE student_profiles SET full_name=?, dob=?, address=?, nationality=?, category=?, course_applied=?, previous_marks=?, abc_id=?, extended_data=? WHERE id=?");
-             $stmt->execute([$new_full_name, $new_dob, $new_address, $new_nationality, $new_category, $new_course_applied, $new_previous_marks, $new_abc_id, $new_extended_json, $profile_id]);
+             $stmt = $pdo->prepare("UPDATE student_profiles SET full_name=?, dob=?, address=?, nationality=?, category=?, course_applied=?, previous_marks=?, abc_id=?, extended_data=?, admission_mode=? WHERE id=?");
+             $stmt->execute([$new_full_name, $new_dob, $new_address, $new_nationality, $new_category, $new_course_applied, $new_previous_marks, $new_abc_id, $new_extended_json, $new_admission_mode, $profile_id]);
 
         } else {
              // New Registration
@@ -179,8 +183,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $app_no = 'APP-' . date('Y') . '-' . mt_rand(10000, 99999);
             $extended_json = json_encode($post_extended_data);
 
-            $stmt = $pdo->prepare("INSERT INTO student_profiles (user_id, full_name, dob, address, nationality, category, course_applied, previous_marks, abc_id, created_at, application_no, extended_data, is_form_locked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
-            $stmt->execute([$user_id, $post_full_name, $post_dob, $post_address, $post_nationality, $post_category, $post_course_applied, $post_previous_marks, $post_abc_id, $created_at, $app_no, $extended_json]);
+            $stmt = $pdo->prepare("INSERT INTO student_profiles (user_id, full_name, dob, address, nationality, category, course_applied, previous_marks, abc_id, created_at, application_no, extended_data, is_form_locked, admission_mode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)");
+            $stmt->execute([$user_id, $post_full_name, $post_dob, $post_address, $post_nationality, $post_category, $post_course_applied, $post_previous_marks, $post_abc_id, $created_at, $app_no, $extended_json, $post_admission_mode]);
             $profile_id = $pdo->lastInsertId();
 
             // International Details
