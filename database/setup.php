@@ -93,12 +93,22 @@ $sql = "CREATE TABLE IF NOT EXISTS tasks (
     status TEXT DEFAULT 'Pending', -- Pending, In Progress, Completed, On Hold
     progress INTEGER DEFAULT 0,
     due_date DATE,
+    attachment TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (assigned_to) REFERENCES users(id),
     FOREIGN KEY (assigned_by) REFERENCES users(id)
 )";
 $pdo->exec($sql);
+
+// Migration for attachment column in tasks
+try {
+    $pdo->query("SELECT attachment FROM tasks LIMIT 1");
+} catch (Exception $e) {
+    $pdo->exec("ALTER TABLE tasks ADD COLUMN attachment TEXT");
+    echo "Added 'attachment' column to tasks table.\n";
+}
+
 echo "Table 'tasks' created.\n";
 
 // Task Comments Table
@@ -107,12 +117,35 @@ $sql = "CREATE TABLE IF NOT EXISTS task_comments (
     task_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     comment TEXT NOT NULL,
+    attachment TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (task_id) REFERENCES tasks(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 )";
 $pdo->exec($sql);
+
+// Migration for attachment column in comments
+try {
+    $pdo->query("SELECT attachment FROM task_comments LIMIT 1");
+} catch (Exception $e) {
+    $pdo->exec("ALTER TABLE task_comments ADD COLUMN attachment TEXT");
+    echo "Added 'attachment' column to task_comments table.\n";
+}
+
 echo "Table 'task_comments' created.\n";
+
+// --- NOTIFICATIONS TABLE ---
+$sql = "CREATE TABLE IF NOT EXISTS notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    message TEXT NOT NULL,
+    link TEXT,
+    is_read INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+)";
+$pdo->exec($sql);
+echo "Table 'notifications' created.\n";
 
 
 // Seed users

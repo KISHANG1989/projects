@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/functions.php';
+require_once __DIR__ . '/../../includes/notifications.php';
 
 requireLogin();
 if (!hasRole('registrar') && !hasRole('admin')) {
@@ -18,6 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt = $pdo->prepare("UPDATE documents SET status = ?, remarks = ? WHERE id = ?");
         $stmt->execute([$status, $remarks, $doc_id]);
+
+        // Notify if Rejected
+        if ($status === 'Rejected') {
+            $stmt = $pdo->prepare("SELECT user_id, doc_type FROM documents WHERE id = ?");
+            $stmt->execute([$doc_id]);
+            $doc = $stmt->fetch();
+            createNotification($doc['user_id'], "Document Rejected: " . $doc['doc_type'] . ". Reason: " . $remarks, "/modules/registrar/registration.php");
+        }
 
         if (isset($_SERVER['HTTP_REFERER'])) {
             redirect($_SERVER['HTTP_REFERER']);
@@ -87,6 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $profile_id = (int)$_POST['profile_id'];
         $decision = $_POST['decision']; // Approved or Rejected
 
+        // Get user_id of student
+        $stmt = $pdo->prepare("SELECT user_id FROM student_profiles WHERE id = ?");
+        $stmt->execute([$profile_id]);
+        $uid = $stmt->fetchColumn();
+
         if ($decision === 'Approved') {
             // Generate Enrollment Number: ENR-{YEAR}-{ID}
             $year = date('Y');
@@ -95,9 +109,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Also lock the form if approved
             $stmt = $pdo->prepare("UPDATE student_profiles SET enrollment_status = ?, roll_number = ?, is_form_locked = 1, edit_permissions = NULL WHERE id = ?");
             $stmt->execute([$decision, $roll_number, $profile_id]);
+
+            createNotification($uid, "Admission Approved! Your Roll No is $roll_number.", "/modules/registrar/registration.php");
         } else {
             $stmt = $pdo->prepare("UPDATE student_profiles SET enrollment_status = ? WHERE id = ?");
             $stmt->execute([$decision, $profile_id]);
+
+            createNotification($uid, "Admission Application Rejected.", "/modules/registrar/registration.php");
         }
 
         redirect($_SERVER['HTTP_REFERER']);
@@ -106,6 +124,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $profile_id = (int)$_POST['profile_id'];
         $sub_action = $_POST['sub_action'];
 
+        // Get user_id
+        $stmt = $pdo->prepare("SELECT user_id FROM student_profiles WHERE id = ?");
+        $stmt->execute([$profile_id]);
+        $uid = $stmt->fetchColumn();
+
         if ($sub_action === 'unlock') {
             $permissions = isset($_POST['permissions']) ? json_encode($_POST['permissions']) : '[]';
             // Unlock form, set permissions, set status to indicate needs correction?
@@ -113,6 +136,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // So we unlock specific fields.
             $stmt = $pdo->prepare("UPDATE student_profiles SET is_form_locked = 0, edit_permissions = ? WHERE id = ?");
             $stmt->execute([$permissions, $profile_id]);
+
+            createNotification($uid, "Action Required: Your application has been unlocked for corrections.", "/modules/registrar/registration.php");
         }
         elseif ($sub_action === 'approve') {
             // Lock form, clear permissions

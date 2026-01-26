@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/functions.php';
+require_once __DIR__ . '/../../includes/notifications.php';
 
 requireLogin();
 
@@ -51,9 +52,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     elseif (isset($_POST['add_comment'])) {
         $comment = sanitize($_POST['comment']);
-        if (!empty($comment)) {
-            $ins = $pdo->prepare("INSERT INTO task_comments (task_id, user_id, comment) VALUES (?, ?, ?)");
-            $ins->execute([$task_id, $user_id, $comment]);
+
+        $attachment = null;
+        if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
+             $ext = strtolower(pathinfo($_FILES['attachment']['name'], PATHINFO_EXTENSION));
+             $allowed = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx', 'xls', 'xlsx'];
+             if (in_array($ext, $allowed) && $_FILES['attachment']['size'] <= 500 * 1024) {
+                 $new_name = 'comment_' . time() . '_' . $user_id . '.' . $ext;
+                 move_uploaded_file($_FILES['attachment']['tmp_name'], __DIR__ . '/../../uploads/documents/' . $new_name);
+                 $attachment = $new_name;
+             }
+        }
+
+        if (!empty($comment) || $attachment) {
+            $ins = $pdo->prepare("INSERT INTO task_comments (task_id, user_id, comment, attachment) VALUES (?, ?, ?, ?)");
+            $ins->execute([$task_id, $user_id, $comment, $attachment]);
+
+            // Notify
+            $target = ($user_id == $task['assigned_to']) ? $task['assigned_by'] : $task['assigned_to'];
+            // Don't notify self if assigner=assignee
+            if ($target != $user_id) {
+                createNotification($target, "New Comment on Task: " . $task['title'], "/modules/task_manager/view_task.php?id=$task_id");
+            }
+
             redirect("view_task.php?id=$task_id");
         }
     }
@@ -96,6 +117,13 @@ require_once __DIR__ . '/../../includes/header.php';
 
                     <h6 class="fw-bold">Description</h6>
                     <p class="text-secondary bg-light p-3 rounded"><?php echo nl2br(htmlspecialchars($task['description'])); ?></p>
+
+                    <?php if(!empty($task['attachment'])): ?>
+                        <div class="mt-3">
+                            <i class="fas fa-paperclip me-2 text-muted"></i>
+                            <a href="/uploads/documents/<?php echo $task['attachment']; ?>" target="_blank" class="text-decoration-none fw-bold">Download Attachment</a>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -103,11 +131,14 @@ require_once __DIR__ . '/../../includes/header.php';
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white fw-bold">Collaboration / Comments</div>
                 <div class="card-body">
-                    <form method="POST" class="mb-4">
+                    <form method="POST" class="mb-4" enctype="multipart/form-data">
                         <input type="hidden" name="add_comment" value="1">
-                        <div class="input-group">
-                            <textarea name="comment" class="form-control" rows="2" placeholder="Write a comment..." required></textarea>
-                            <button class="btn btn-primary">Post</button>
+                        <div class="mb-2">
+                             <textarea name="comment" class="form-control" rows="2" placeholder="Write a comment..." required></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <input type="file" name="attachment" class="form-control form-control-sm w-50">
+                            <button class="btn btn-primary btn-sm px-4">Post</button>
                         </div>
                     </form>
 
@@ -123,6 +154,11 @@ require_once __DIR__ . '/../../includes/header.php';
                                         <span class="text-muted fw-normal ms-2"><?php echo date('M d, H:i', strtotime($c['created_at'])); ?></span>
                                     </div>
                                     <div class="text-dark mt-1"><?php echo nl2br(htmlspecialchars($c['comment'])); ?></div>
+                                    <?php if(!empty($c['attachment'])): ?>
+                                        <div class="mt-1 small">
+                                            <a href="/uploads/documents/<?php echo $c['attachment']; ?>" target="_blank" class="text-decoration-none text-primary"><i class="fas fa-paperclip me-1"></i> Attachment</a>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         <?php endforeach; ?>

@@ -112,6 +112,10 @@ if ($profile) {
                         <?php endif; ?>
 
                         <a href="view_profile_printable.php" target="_blank" class="btn btn-outline-dark btn-sm w-100 mt-2"><i class="fas fa-print me-1"></i> Print Application</a>
+
+                        <?php if($profile['enrollment_status'] === 'Approved'): ?>
+                            <a href="admission_letter.php" target="_blank" class="btn btn-success btn-sm w-100 mt-2 fw-bold"><i class="fas fa-certificate me-1"></i> Admission Letter</a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

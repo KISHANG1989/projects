@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/functions.php';
+require_once __DIR__ . '/../../includes/notifications.php';
 require_once __DIR__ . '/functions.php';
 
 requireLogin();
@@ -51,10 +52,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // Handle Attachment
+    $attachment = null;
+    if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
+        if ($_FILES['attachment']['size'] > 500 * 1024) {
+             $error = "File too large (Max 500KB)";
+        } else {
+             $ext = strtolower(pathinfo($_FILES['attachment']['name'], PATHINFO_EXTENSION));
+             $allowed = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx', 'xls', 'xlsx'];
+             if (!in_array($ext, $allowed)) {
+                 $error = "Invalid file format.";
+             } else {
+                 $new_name = 'task_' . time() . '_' . $user_id . '.' . $ext;
+                 $target = __DIR__ . '/../../uploads/documents/' . $new_name;
+                 if (move_uploaded_file($_FILES['attachment']['tmp_name'], $target)) {
+                     $attachment = $new_name;
+                 }
+             }
+        }
+    }
+
     if (empty($error)) {
-        $stmt = $pdo->prepare("INSERT INTO tasks (title, description, assigned_to, assigned_by, department, priority, due_date) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        if ($stmt->execute([$title, $desc, $assigned_to, $user_id, $task_dept, $priority, $due_date])) {
+        $stmt = $pdo->prepare("INSERT INTO tasks (title, description, assigned_to, assigned_by, department, priority, due_date, attachment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        if ($stmt->execute([$title, $desc, $assigned_to, $user_id, $task_dept, $priority, $due_date, $attachment])) {
+            $tid = $pdo->lastInsertId();
             $success = "Task created successfully!";
+
+            // Notification
+            createNotification($assigned_to, "New Task Assigned: $title", "/modules/task_manager/view_task.php?id=$tid");
         } else {
             $error = "Failed to create task.";
         }
@@ -90,7 +115,7 @@ if ($role === 'dept_head') {
                         <div class="alert alert-danger"><?php echo $error; ?></div>
                     <?php endif; ?>
 
-                    <form method="POST">
+                    <form method="POST" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label class="form-label">Task Title <span class="text-danger">*</span></label>
                             <input type="text" name="title" class="form-control" required>
@@ -99,6 +124,11 @@ if ($role === 'dept_head') {
                         <div class="mb-3">
                             <label class="form-label">Description</label>
                             <textarea name="description" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                             <label class="form-label">Attachment (Optional)</label>
+                             <input type="file" name="attachment" class="form-control">
                         </div>
 
                         <div class="row">
