@@ -18,12 +18,44 @@ if ($profile) {
     $stmt = $pdo->prepare("SELECT * FROM documents WHERE user_id = ?");
     $stmt->execute([$user_id]);
     $documents = $stmt->fetchAll();
+
+    // Check for Rejected/Pending Documents for "Flasher"
+    $hasRejected = false;
+    $hasPending = false;
+    foreach ($documents as $doc) {
+        if ($doc['status'] === 'Rejected') $hasRejected = true;
+        if ($doc['status'] === 'Pending') $hasPending = true;
+    }
+
+    $extended = json_decode($profile['extended_data'] ?? '{}', true);
+    $permissions = json_decode($profile['edit_permissions'] ?? '[]', true);
     ?>
+
+    <!-- Flasher Modal -->
+    <?php if ($hasRejected): ?>
+    <div class="modal fade show" id="alertModal" tabindex="-1" aria-modal="true" role="dialog" style="display: block; background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-danger">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Action Required</h5>
+                </div>
+                <div class="modal-body">
+                    <p class="fw-bold">Some of your documents have been rejected.</p>
+                    <p>Please review the remarks and upload valid documents immediately to proceed with your admission.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="document.getElementById('alertModal').style.display='none'">I Understand</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <div class="container py-4">
         <div class="row mb-4">
             <div class="col-md-8">
                 <h2 class="fw-bold">My Application Dashboard</h2>
-                <p class="text-muted">Manage your application and documents.</p>
+                <p class="text-muted">Application No: <span class="fw-bold text-primary"><?php echo htmlspecialchars($profile['application_no']); ?></span></p>
             </div>
             <div class="col-md-4 text-end">
                 <?php
@@ -35,31 +67,22 @@ if ($profile) {
                 ?>
                 <div class="card <?php echo $statusClass; ?> text-white shadow-sm">
                     <div class="card-body py-2 text-center">
-                        <small class="d-block opacity-75">Status</small>
+                        <small class="d-block opacity-75">Admission Status</small>
                         <span class="fw-bold fs-5"><?php echo htmlspecialchars($profile['enrollment_status']); ?></span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <?php if (isset($_GET['success'])): ?>
-            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                <i class="fas fa-check-circle me-2"></i> Document updated successfully!
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-        <?php if (isset($_GET['error'])): ?>
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i> <?php echo htmlspecialchars($_GET['error']); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-
         <div class="row">
+            <!-- Profile Overview -->
             <div class="col-md-4 mb-4">
                 <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white fw-bold">Profile Details</div>
                     <div class="card-body">
-                        <h5 class="fw-bold mb-3">Profile Details</h5>
+                         <div class="text-center mb-3">
+                            <i class="fas fa-user-circle fa-4x text-secondary"></i>
+                        </div>
                         <ul class="list-group list-group-flush small">
                             <li class="list-group-item d-flex justify-content-between px-0">
                                 <span class="text-muted">Name</span>
@@ -70,18 +93,30 @@ if ($profile) {
                                 <span><?php echo htmlspecialchars($profile['course_applied']); ?></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between px-0">
+                                <span class="text-muted">Father's Name</span>
+                                <span><?php echo htmlspecialchars($extended['family']['father_name'] ?? '-'); ?></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0">
                                 <span class="text-muted">Roll Number</span>
                                 <span class="font-monospace text-primary"><?php echo htmlspecialchars($profile['roll_number'] ?? 'Pending'); ?></span>
                             </li>
-                             <li class="list-group-item d-flex justify-content-between px-0">
-                                <span class="text-muted">Submission Date</span>
-                                <span><?php echo htmlspecialchars($profile['created_at'] ?? 'N/A'); ?></span>
-                            </li>
                         </ul>
+
+                        <?php if(!empty($profile['edit_permissions'])): ?>
+                            <div class="alert alert-info mt-3 small">
+                                <i class="fas fa-edit me-1"></i> Edit permission granted by Registrar.
+                            </div>
+                            <a href="#" class="btn btn-outline-primary btn-sm w-100 mt-2">Edit Form</a>
+                        <?php else: ?>
+                            <button class="btn btn-secondary btn-sm w-100 mt-3" disabled><i class="fas fa-lock me-1"></i> Form Locked</button>
+                        <?php endif; ?>
+
+                        <a href="view_profile_printable.php" target="_blank" class="btn btn-outline-dark btn-sm w-100 mt-2"><i class="fas fa-print me-1"></i> Print Application</a>
                     </div>
                 </div>
             </div>
 
+            <!-- Documents -->
             <div class="col-md-8">
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white fw-bold">My Documents</div>
@@ -99,9 +134,11 @@ if ($profile) {
                                     <?php foreach ($documents as $doc): ?>
                                     <tr>
                                         <td class="ps-4">
-                                            <span class="text-capitalize fw-bold d-block text-secondary"><?php echo str_replace('_', ' ', $doc['doc_type']); ?></span>
+                                            <a href="/uploads/documents/<?php echo htmlspecialchars($doc['file_path']); ?>" target="_blank" class="text-decoration-none fw-bold">
+                                                <i class="fas fa-file-pdf me-1 text-danger"></i> <?php echo str_replace('_', ' ', $doc['doc_type']); ?>
+                                            </a>
                                             <?php if ($doc['status'] == 'Rejected' && !empty($doc['remarks'])): ?>
-                                                <small class="text-danger"><i class="fas fa-info-circle me-1"></i><?php echo htmlspecialchars($doc['remarks']); ?></small>
+                                                <small class="text-danger d-block mt-1"><i class="fas fa-info-circle me-1"></i><?php echo htmlspecialchars($doc['remarks']); ?></small>
                                             <?php endif; ?>
                                         </td>
                                         <td>
@@ -115,12 +152,27 @@ if ($profile) {
                                             <span class="badge <?php echo $badgeClass; ?> rounded-pill"><?php echo htmlspecialchars($doc['status']); ?></span>
                                         </td>
                                         <td class="text-end pe-4">
-                                            <?php if ($doc['status'] === 'Verified'): ?>
-                                                <span class="text-muted" title="Document Locked"><i class="fas fa-lock"></i> Locked</span>
-                                            <?php else: ?>
+                                            <?php
+                                                $canEditUploads = in_array('uploads', $permissions);
+                                                $isLocked = (bool)$profile['is_form_locked'];
+
+                                                $canReplace = false;
+                                                if ($doc['status'] === 'Rejected') {
+                                                    $canReplace = true;
+                                                } elseif ($doc['status'] === 'Verified') {
+                                                    $canReplace = false;
+                                                } else { // Pending or others
+                                                    if (!$isLocked || $canEditUploads) {
+                                                        $canReplace = true;
+                                                    }
+                                                }
+                                            ?>
+                                            <?php if ($canReplace): ?>
                                                 <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#replaceDoc<?php echo $doc['id']; ?>">
                                                     <i class="fas fa-sync-alt me-1"></i> Replace
                                                 </button>
+                                            <?php else: ?>
+                                                <span class="text-muted" title="Document Locked"><i class="fas fa-lock"></i> Locked</span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -152,179 +204,245 @@ if ($profile) {
     </div>
     <?php
 } else {
-    // REGISTRATION FORM MODE (Existing Code)
+    // MULTI-STEP REGISTRATION FORM
 ?>
 
-<div class="row mb-4">
-    <div class="col-12">
-        <h2 class="fw-bold">Student Admission Form</h2>
-        <p class="text-muted">Fill out the details below to apply for your program.</p>
-
-        <?php if (isset($_GET['success'])): ?>
-            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                <i class="fas fa-check-circle me-2"></i> Application submitted successfully!
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-        <?php if (isset($_GET['error'])): ?>
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i> <?php echo htmlspecialchars($_GET['error']); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-    </div>
-</div>
-
-<div class="card border-0 shadow-lg">
-    <div class="card-header bg-white border-0 pt-4 px-4">
-        <ul class="nav nav-pills nav-fill p-1 bg-light rounded" id="studentTypeTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active rounded fw-bold" id="indian-tab" data-bs-toggle="tab" data-bs-target="#indian" type="button" role="tab" onclick="setNationality('Indian')">
-                    <i class="fas fa-flag-checkered me-2"></i> Indian Student
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link rounded fw-bold" id="international-tab" data-bs-toggle="tab" data-bs-target="#international" type="button" role="tab" onclick="setNationality('International')">
-                    <i class="fas fa-globe me-2"></i> International Student
-                </button>
-            </li>
-        </ul>
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Student Admission Registration</h2>
+        <p class="text-muted">Complete all sections to submit your application.</p>
     </div>
 
-    <div class="card-body p-4">
-        <form method="POST" action="registration_handler.php" enctype="multipart/form-data">
-            <input type="hidden" name="nationality" id="nationalityField" value="Indian">
-
-            <h5 class="text-primary fw-bold mb-3"><i class="fas fa-user me-2"></i>Personal Details</h5>
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input type="text" name="full_name" class="form-control" id="fullName" placeholder="John Doe" required>
-                        <label for="fullName">Full Name</label>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input type="date" name="dob" class="form-control" id="dob" required>
-                        <label for="dob">Date of Birth</label>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="form-floating">
-                        <textarea name="address" class="form-control" id="address" style="height: 100px" placeholder="Address" required></textarea>
-                        <label for="address">Permanent Address</label>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <select name="category" class="form-select" id="category">
-                            <option value="General">General</option>
-                            <option value="OBC">OBC</option>
-                            <option value="SC/ST">SC/ST</option>
-                            <option value="Other">Other</option>
-                        </select>
-                        <label for="category">Category</label>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <select name="course_applied" class="form-select" id="course" required>
-                            <option value="">Select Program</option>
-                            <option value="B.Tech">B.Tech</option>
-                            <option value="BSc">B.Sc</option>
-                            <option value="BBA">BBA</option>
-                            <option value="MBA">MBA</option>
-                            <option value="M.Tech">M.Tech</option>
-                            <option value="PhD">PhD</option>
-                        </select>
-                        <label for="course">Program Applied For</label>
-                    </div>
-                </div>
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-white p-0">
+            <!-- Progress Bar/Tabs -->
+            <ul class="nav nav-pills nav-fill p-3" id="regTabs">
+                <li class="nav-item"><a class="nav-link active fw-bold" id="step1-tab">1. Basic & Academic</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold" id="step2-tab">2. Profile</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold" id="step3-tab">3. Family</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold" id="step4-tab">4. NEP & Compliance</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold" id="step5-tab">5. Uploads</a></li>
+            </ul>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar" id="progressBar" style="width: 20%;"></div>
             </div>
+        </div>
 
-            <h5 class="text-primary fw-bold mb-3"><i class="fas fa-graduation-cap me-2"></i>Academic Details</h5>
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input type="text" name="previous_marks" class="form-control" id="prevMarks" placeholder="e.g., 85%" required>
-                        <label for="prevMarks">Previous Academic Performance (CGPA / %)</label>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input type="text" name="abc_id" class="form-control" id="abcId" placeholder="12-digit ABC ID">
-                        <label for="abcId">NEP ABC ID</label>
-                    </div>
-                </div>
-            </div>
+        <div class="card-body p-5">
+            <form method="POST" action="registration_handler.php" enctype="multipart/form-data" id="regForm">
 
-            <!-- International Fields -->
-            <div id="internationalFields" style="display:none;" class="mb-4 p-3 bg-light rounded border">
-                <h5 class="text-info fw-bold mb-3"><i class="fas fa-plane me-2"></i>International Details</h5>
-                <div class="row g-3 mb-3">
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input type="text" name="country_of_origin" class="form-control" id="country" placeholder="Country">
-                            <label for="country">Country of Origin</label>
+                <!-- Step 1: Basic & Academic -->
+                <div class="step-section" id="step1">
+                    <h5 class="mb-4 text-primary"><i class="fas fa-university me-2"></i>Academic Information</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Admission Year</label>
+                            <input type="text" class="form-control" value="<?php echo date('Y'); ?>" disabled>
+                        </div>
+                         <div class="col-md-6">
+                            <label class="form-label">School / Department</label>
+                            <select class="form-select">
+                                <option>School of Engineering</option>
+                                <option>School of Management</option>
+                                <option>School of Sciences</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Program Applied For <span class="text-danger">*</span></label>
+                            <select name="course_applied" class="form-select" required>
+                                <option value="">Select Program</option>
+                                <option value="B.Tech">B.Tech</option>
+                                <option value="BSc">B.Sc</option>
+                                <option value="BBA">BBA</option>
+                                <option value="MBA">MBA</option>
+                                <option value="M.Tech">M.Tech</option>
+                                <option value="PhD">PhD</option>
+                            </select>
+                        </div>
+                         <div class="col-md-6">
+                            <label class="form-label">Previous Marks (%) <span class="text-danger">*</span></label>
+                            <input type="text" name="previous_marks" class="form-control" placeholder="e.g. 85%" required>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input type="text" name="passport_number" class="form-control" id="passport" placeholder="Passport">
-                            <label for="passport">Passport Number</label>
+                    <div class="text-end mt-4">
+                        <button type="button" class="btn btn-primary px-4" onclick="nextStep(2)">Next <i class="fas fa-arrow-right ms-2"></i></button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Personal Profile -->
+                <div class="step-section d-none" id="step2">
+                    <h5 class="mb-4 text-primary"><i class="fas fa-user me-2"></i>Personal Details</h5>
+                    <div class="row g-3">
+                         <div class="col-md-6">
+                            <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="full_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                            <input type="date" name="dob" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nationality <span class="text-danger">*</span></label>
+                            <select name="nationality" class="form-select" onchange="toggleInternational(this.value)">
+                                <option value="Indian">Indian</option>
+                                <option value="International">International</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Category</label>
+                            <select name="category" class="form-select">
+                                <option value="General">General</option>
+                                <option value="OBC">OBC</option>
+                                <option value="SC/ST">SC/ST</option>
+                            </select>
+                        </div>
+                         <div class="col-12">
+                            <label class="form-label">Address <span class="text-danger">*</span></label>
+                            <textarea name="address" class="form-control" rows="2" required></textarea>
                         </div>
                     </div>
-                     <div class="col-md-4">
-                        <div class="form-floating">
-                            <input type="text" name="visa_details" class="form-control" id="visa" placeholder="Visa">
-                            <label for="visa">Visa Details</label>
+
+                    <div id="intlFields" class="mt-4 p-3 bg-light rounded d-none">
+                        <h6 class="text-info fw-bold">International Details</h6>
+                        <div class="row g-3">
+                             <div class="col-md-4">
+                                <input type="text" name="country_of_origin" class="form-control" placeholder="Country of Origin">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="passport_number" class="form-control" placeholder="Passport No.">
+                            </div>
+                             <div class="col-md-4">
+                                <input type="text" name="visa_details" class="form-control" placeholder="Visa Details">
+                            </div>
+                             <div class="col-md-6">
+                                <label class="small text-muted">Passport Copy</label>
+                                <input type="file" name="passport_copy" class="form-control">
+                            </div>
+                             <div class="col-md-6">
+                                <label class="small text-muted">Visa Copy</label>
+                                <input type="file" name="visa_copy" class="form-control">
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label small text-muted">Passport Copy (Max 200KB)</label>
-                        <input type="file" name="passport_copy" class="form-control">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label small text-muted">Visa Copy (Max 200KB)</label>
-                        <input type="file" name="visa_copy" class="form-control">
+                    <div class="text-end mt-4">
+                        <button type="button" class="btn btn-secondary px-4 me-2" onclick="nextStep(1)">Previous</button>
+                        <button type="button" class="btn btn-primary px-4" onclick="nextStep(3)">Next <i class="fas fa-arrow-right ms-2"></i></button>
                     </div>
                 </div>
-            </div>
 
-            <h5 class="text-primary fw-bold mb-3"><i class="fas fa-file-upload me-2"></i>Documents</h5>
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <label class="form-label">Photo (Max 200KB) <span class="text-danger">*</span></label>
-                    <input type="file" name="photo" class="form-control" required>
+                <!-- Step 3: Family -->
+                <div class="step-section d-none" id="step3">
+                    <h5 class="mb-4 text-primary"><i class="fas fa-users me-2"></i>Family Details</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Father's Name</label>
+                            <input type="text" name="father_name" class="form-control">
+                        </div>
+                         <div class="col-md-6">
+                            <label class="form-label">Mother's Name</label>
+                            <input type="text" name="mother_name" class="form-control">
+                        </div>
+                         <div class="col-md-6">
+                            <label class="form-label">Guardian Contact</label>
+                            <input type="text" name="guardian_contact" class="form-control" placeholder="Phone Number">
+                        </div>
+                    </div>
+                     <div class="text-end mt-4">
+                        <button type="button" class="btn btn-secondary px-4 me-2" onclick="nextStep(2)">Previous</button>
+                        <button type="button" class="btn btn-primary px-4" onclick="nextStep(4)">Next <i class="fas fa-arrow-right ms-2"></i></button>
+                    </div>
                 </div>
-                 <div class="col-md-4">
-                    <label class="form-label">ID Proof (Aadhar/PAN) (Max 200KB) <span class="text-danger">*</span></label>
-                    <input type="file" name="id_proof" class="form-control" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Previous Marksheet (Max 200KB) <span class="text-danger">*</span></label>
-                    <input type="file" name="previous_marksheet" class="form-control" required>
-                </div>
-            </div>
 
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary btn-lg shadow-sm">Submit Application</button>
-            </div>
-        </form>
+                <!-- Step 4: NEP & Compliance -->
+                <div class="step-section d-none" id="step4">
+                     <h5 class="mb-4 text-primary"><i class="fas fa-book-open me-2"></i>NEP & Compliance</h5>
+                     <div class="row g-3">
+                         <div class="col-md-6">
+                             <label class="form-label">ABC ID (Academic Bank of Credits)</label>
+                             <input type="text" name="abc_id" class="form-control" placeholder="12 Digit ID">
+                         </div>
+                         <div class="col-md-6">
+                             <label class="form-label">Scholarship / Awards Details</label>
+                             <input type="text" name="awards" class="form-control" placeholder="Optional">
+                         </div>
+                         <div class="col-12">
+                             <label class="form-label">Anti-Ragging Undertaking Reference No.</label>
+                             <input type="text" name="anti_ragging" class="form-control">
+                         </div>
+                         <div class="col-12">
+                             <label class="form-label">Other Regulatory Details</label>
+                             <textarea name="nep_details" class="form-control" rows="2"></textarea>
+                         </div>
+                     </div>
+                     <div class="text-end mt-4">
+                        <button type="button" class="btn btn-secondary px-4 me-2" onclick="nextStep(3)">Previous</button>
+                        <button type="button" class="btn btn-primary px-4" onclick="nextStep(5)">Next <i class="fas fa-arrow-right ms-2"></i></button>
+                    </div>
+                </div>
+
+                <!-- Step 5: Uploads & Submit -->
+                <div class="step-section d-none" id="step5">
+                    <h5 class="mb-4 text-primary"><i class="fas fa-upload me-2"></i>Document Uploads</h5>
+                    <div class="alert alert-info small">Max file size: 200KB. Formats: JPG, PNG, PDF.</div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Student Photo <span class="text-danger">*</span></label>
+                            <input type="file" name="photo" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Signature <span class="text-danger">*</span></label>
+                            <input type="file" name="signature" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">ID Proof (Aadhar/PAN) <span class="text-danger">*</span></label>
+                            <input type="file" name="id_proof" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Previous Marksheet <span class="text-danger">*</span></label>
+                            <input type="file" name="previous_marksheet" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" required id="declaration">
+                        <label class="form-check-label" for="declaration">
+                            I hereby declare that all the information submitted is correct and I agree to the University rules and regulations.
+                        </label>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary px-4 me-2" onclick="nextStep(4)">Previous</button>
+                        <button type="submit" class="btn btn-success btn-lg px-5">Submit Application</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
-    function setNationality(type) {
-        document.getElementById('nationalityField').value = type;
-        const intlFields = document.getElementById('internationalFields');
-        if (type === 'International') {
-            intlFields.style.display = 'block';
+    function nextStep(step) {
+        // Hide all steps
+        document.querySelectorAll('.step-section').forEach(el => el.classList.add('d-none'));
+        // Show target step
+        document.getElementById('step' + step).classList.remove('d-none');
+
+        // Update Tabs
+        document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+        document.getElementById('step' + step + '-tab').classList.add('active');
+
+        // Update Progress
+        const progress = step * 20;
+        document.getElementById('progressBar').style.width = progress + '%';
+    }
+
+    function toggleInternational(val) {
+        if (val === 'International') {
+            document.getElementById('intlFields').classList.remove('d-none');
         } else {
-            intlFields.style.display = 'none';
+            document.getElementById('intlFields').classList.add('d-none');
         }
     }
 </script>

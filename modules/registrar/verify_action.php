@@ -88,17 +88,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $decision = $_POST['decision']; // Approved or Rejected
 
         if ($decision === 'Approved') {
-            // Generate Roll Number: UNIV-{YEAR}-{ID}
+            // Generate Enrollment Number: ENR-{YEAR}-{ID}
             $year = date('Y');
-            $roll_number = sprintf("UNIV-%s-%03d", $year, $profile_id);
+            $roll_number = sprintf("ENR-%s-%03d", $year, $profile_id);
 
-            $stmt = $pdo->prepare("UPDATE student_profiles SET enrollment_status = ?, roll_number = ? WHERE id = ?");
+            // Also lock the form if approved
+            $stmt = $pdo->prepare("UPDATE student_profiles SET enrollment_status = ?, roll_number = ?, is_form_locked = 1, edit_permissions = NULL WHERE id = ?");
             $stmt->execute([$decision, $roll_number, $profile_id]);
         } else {
             $stmt = $pdo->prepare("UPDATE student_profiles SET enrollment_status = ? WHERE id = ?");
             $stmt->execute([$decision, $profile_id]);
         }
 
-        redirect('verification_list.php');
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+    elseif ($action === 'manage_permissions') {
+        $profile_id = (int)$_POST['profile_id'];
+        $sub_action = $_POST['sub_action'];
+
+        if ($sub_action === 'unlock') {
+            $permissions = isset($_POST['permissions']) ? json_encode($_POST['permissions']) : '[]';
+            // Unlock form, set permissions, set status to indicate needs correction?
+            // The requirement says "Authorisation and approval option for that specific data and lock the form again".
+            // So we unlock specific fields.
+            $stmt = $pdo->prepare("UPDATE student_profiles SET is_form_locked = 0, edit_permissions = ? WHERE id = ?");
+            $stmt->execute([$permissions, $profile_id]);
+        }
+        elseif ($sub_action === 'approve') {
+            // Lock form, clear permissions
+            $stmt = $pdo->prepare("UPDATE student_profiles SET is_form_locked = 1, edit_permissions = NULL WHERE id = ?");
+            $stmt->execute([$profile_id]);
+        }
+
+        redirect('view_student.php?id=' . $profile_id);
     }
 }
