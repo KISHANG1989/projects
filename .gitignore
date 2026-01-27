@@ -14,5 +14,4 @@ composer.lock
 /dummy.pdf
 /database/*.sqlite
 /uploads/documents/*
-/verification/*.png
 /verification/debug_*.png
