@@ -1,4 +1,0 @@
-Infrastructure verified
-Exam Application verified
-Seating Plan verified
-Invigilation verified
