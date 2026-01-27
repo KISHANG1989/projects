@@ -1,0 +1,17 @@
+vendor/
+vendor_legacy/
+.phpunit.result.cache
+composer.lock
+/server.log
+/server_pid.txt
+/verification_output.txt
+/verification_log.txt
+/verification_logistics.txt
+/verification_logistics_v2.txt
+/db_dump.txt
+/db_dump_after.txt
+/db_ids.txt
+/dummy.pdf
+/database/*.sqlite
+/uploads/documents/*
+/verification/debug_*.png
