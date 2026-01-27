@@ -3,6 +3,7 @@ session_start();
 require_once '../../config/db.php';
 require_once '../../includes/functions.php';
 require_once '../../includes/auth.php';
+require_once 'grading_system.php';
 
 requireLogin();
 
@@ -12,17 +13,6 @@ if (!hasRole('faculty') && !hasRole('admin')) {
 
 $pdo = getDBConnection();
 $message = '';
-
-// Helper to calculate Grade
-function calculateGrade($total) {
-    if ($total >= 90) return ['O', 10];
-    if ($total >= 80) return ['A+', 9];
-    if ($total >= 70) return ['A', 8];
-    if ($total >= 60) return ['B+', 7];
-    if ($total >= 50) return ['B', 6];
-    if ($total >= 40) return ['P', 5]; // Pass
-    return ['F', 0];
-}
 
 // Handle Save Marks
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_marks'])) {

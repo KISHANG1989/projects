@@ -185,6 +185,61 @@ $sql = "CREATE TABLE IF NOT EXISTS student_marks (
 $pdo->exec($sql);
 echo "Table 'student_marks' created.\n";
 
+// Student Exam Results (SGPA/CGPA)
+$sql = "CREATE TABLE IF NOT EXISTS student_exam_results (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id INTEGER NOT NULL,
+    exam_id INTEGER NOT NULL,
+    sgpa REAL,
+    cgpa REAL,
+    total_credits INTEGER,
+    result_status TEXT, -- Pass, Fail, Promoted
+    processed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES users(id),
+    FOREIGN KEY (exam_id) REFERENCES exams(id),
+    UNIQUE(student_id, exam_id)
+)";
+$pdo->exec($sql);
+echo "Table 'student_exam_results' created.\n";
+
+// Malpractice (UFM)
+$sql = "CREATE TABLE IF NOT EXISTS exam_malpractice (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id INTEGER NOT NULL,
+    exam_id INTEGER NOT NULL,
+    subject_id INTEGER NOT NULL,
+    description TEXT NOT NULL,
+    status TEXT DEFAULT 'Reported', -- Reported, Under Inquiry, Punished, Exonerated
+    evidence_path TEXT,
+    reported_by INTEGER NOT NULL,
+    reported_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES users(id),
+    FOREIGN KEY (exam_id) REFERENCES exams(id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(id),
+    FOREIGN KEY (reported_by) REFERENCES users(id)
+)";
+$pdo->exec($sql);
+echo "Table 'exam_malpractice' created.\n";
+
+// Revaluation Requests
+$sql = "CREATE TABLE IF NOT EXISTS exam_revaluations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id INTEGER NOT NULL,
+    exam_id INTEGER NOT NULL,
+    subject_id INTEGER NOT NULL,
+    original_marks REAL,
+    new_marks REAL,
+    status TEXT DEFAULT 'Requested', -- Requested, Paid, Processing, Completed, No Change
+    payment_status TEXT DEFAULT 'Unpaid',
+    remarks TEXT,
+    requested_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES users(id),
+    FOREIGN KEY (exam_id) REFERENCES exams(id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(id)
+)";
+$pdo->exec($sql);
+echo "Table 'exam_revaluations' created.\n";
+
 // Migration for exam_type in exams
 try {
     $pdo->query("SELECT type FROM exams LIMIT 1");
@@ -238,6 +293,45 @@ $sql = "CREATE TABLE IF NOT EXISTS classrooms (
 )";
 $pdo->exec($sql);
 echo "Table 'classrooms' created.\n";
+
+
+// --- QUESTION PAPER MANAGEMENT TABLES ---
+
+// Question Bank
+$sql = "CREATE TABLE IF NOT EXISTS questions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    subject_id INTEGER NOT NULL,
+    unit INTEGER NOT NULL, -- Unit 1, 2, 3, 4, 5
+    question_text TEXT NOT NULL,
+    question_type TEXT DEFAULT 'Descriptive', -- Descriptive, MCQ
+    marks INTEGER DEFAULT 5,
+    complexity TEXT DEFAULT 'Medium', -- Easy, Medium, Hard
+    options TEXT, -- JSON for MCQ options
+    correct_option TEXT, -- For MCQ
+    created_by INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (subject_id) REFERENCES subjects(id),
+    FOREIGN KEY (created_by) REFERENCES users(id)
+)";
+$pdo->exec($sql);
+echo "Table 'questions' created.\n";
+
+// Generated Question Papers
+$sql = "CREATE TABLE IF NOT EXISTS question_papers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    exam_id INTEGER NOT NULL,
+    subject_id INTEGER NOT NULL,
+    paper_title TEXT NOT NULL,
+    generated_by INTEGER NOT NULL,
+    file_path TEXT, -- Path to generated PDF
+    status TEXT DEFAULT 'Draft', -- Draft, Finalized
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (exam_id) REFERENCES exams(id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(id),
+    FOREIGN KEY (generated_by) REFERENCES users(id)
+)";
+$pdo->exec($sql);
+echo "Table 'question_papers' created.\n";
 
 
 // --- EXAM LOGISTICS TABLES ---

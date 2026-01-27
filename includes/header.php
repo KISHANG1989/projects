@@ -119,6 +119,11 @@ if (isLoggedIn()) {
                     <li><a href="/modules/exam/manage_applications.php" class="ps-5">Exam Apps</a></li>
                     <li><a href="/modules/exam/seating_plan.php" class="ps-5">Seating Plan</a></li>
                     <li><a href="/modules/exam/invigilation.php" class="ps-5">Invigilation</a></li>
+                    <li><a href="/modules/exam/question_bank.php" class="ps-5">Question Bank</a></li>
+                    <li><a href="/modules/exam/generate_paper.php" class="ps-5">Generate Paper</a></li>
+                    <li><a href="/modules/exam/process_results.php" class="ps-5">Process Results</a></li>
+                    <li><a href="/modules/exam/malpractice.php" class="ps-5">Malpractice (UFM)</a></li>
+                    <li><a href="/modules/exam/manage_revaluation.php" class="ps-5">Revaluation Dept</a></li>
                 </ul>
             </li>
             <?php endif; ?>
@@ -137,6 +142,11 @@ if (isLoggedIn()) {
             <li>
                 <a href="/modules/exam/results.php">
                     <i class="fas fa-poll-h me-2"></i> Results
+                </a>
+            </li>
+            <li>
+                <a href="/modules/exam/revaluation_request.php">
+                    <i class="fas fa-search me-2"></i> Revaluation
                 </a>
             </li>
             <?php endif; ?>
