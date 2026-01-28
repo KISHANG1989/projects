@@ -9,7 +9,7 @@
     <!-- Tabler Icons -->
     <link href="../assets/icons/tabler-icons.min.css" rel="stylesheet">
     <!-- App CSS -->
-    <link href="../assets/css/app.css?v=2.0" rel="stylesheet">
+    <link href="../assets/css/modern-admin.css?v=3.0" rel="stylesheet">
     <!-- Theme CSS (Dynamic) -->
     <link id="theme-css" rel="stylesheet">
 </head>
@@ -48,13 +48,33 @@
         <div class="main-content">
             <div class="sidebar-overlay"></div>
 
-             <!-- Topbar -->
-             <header class="topbar">
+            <!-- Topbar -->
+            <header class="topbar">
                 <button id="sidebarToggle" class="btn btn-link text-muted d-lg-none">
                     <i class="ti ti-menu-2 fs-3"></i>
                 </button>
 
+                <div class="d-none d-md-block">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-0 ps-0"><i class="ti ti-search fs-4 text-muted"></i></span>
+                        <input type="text" class="form-control bg-transparent border-0" placeholder="Search..." aria-label="Search">
+                    </div>
+                </div>
+
                 <div class="ms-auto d-flex align-items-center gap-3">
+
+                    <!-- Language Selector -->
+                    <div class="dropdown">
+                        <button class="btn btn-link text-decoration-none dropdown-toggle text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-world fs-4"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item" onclick="setLanguage('en')">English</button></li>
+                            <li><button class="dropdown-item" onclick="setLanguage('hi')">Hindi</button></li>
+                            <li><button class="dropdown-item" onclick="setLanguage('ar')">Arabic</button></li>
+                        </ul>
+                    </div>
+
                     <!-- Theme Switcher -->
                     <div class="dropdown">
                         <button class="btn btn-link text-decoration-none dropdown-toggle text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -73,6 +93,20 @@
                     <div class="form-check form-switch mb-0">
                         <input class="form-check-input" type="checkbox" id="darkModeToggle">
                         <label class="form-check-label" for="darkModeToggle"><i class="ti ti-moon fs-4 text-muted"></i></label>
+                    </div>
+
+                    <!-- Profile -->
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="../assets/images/user-placeholder.svg" alt="User" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><h6 class="dropdown-header" data-i18n="welcome_message">Welcome back!</h6></li>
+                            <li><a class="dropdown-item" href="#"><i class="ti ti-user me-2"></i> <span data-i18n="profile">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="ti ti-settings me-2"></i> <span data-i18n="settings">Settings</span></a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="auth-login.html"><i class="ti ti-logout me-2"></i> <span data-i18n="logout">Logout</span></a></li>
+                        </ul>
                     </div>
                 </div>
             </header>
