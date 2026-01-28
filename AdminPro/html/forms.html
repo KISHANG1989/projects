@@ -41,23 +41,87 @@
 
         <div class="main-content">
             <div class="sidebar-overlay"></div>
+
+            <!-- Topbar -->
             <header class="topbar">
-                <button id="sidebarToggle" class="btn btn-link text-muted d-lg-none"><i class="ti ti-menu-2 fs-3"></i></button>
+                <button id="sidebarToggle" class="btn btn-link text-muted d-lg-none">
+                    <i class="ti ti-menu-2 fs-3"></i>
+                </button>
+
+                <div class="d-none d-md-block">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-0 ps-0"><i class="ti ti-search fs-4 text-muted"></i></span>
+                        <input type="text" class="form-control bg-transparent border-0" placeholder="Search..." aria-label="Search">
+                    </div>
+                </div>
+
                 <div class="ms-auto d-flex align-items-center gap-3">
-                    <div class="form-check form-switch">
+
+                    <!-- Language Selector -->
+                    <div class="dropdown">
+                        <button class="btn btn-link text-decoration-none dropdown-toggle text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-world fs-4"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item" onclick="setLanguage('en')">English</button></li>
+                            <li><button class="dropdown-item" onclick="setLanguage('hi')">Hindi</button></li>
+                            <li><button class="dropdown-item" onclick="setLanguage('ar')">Arabic</button></li>
+                        </ul>
+                    </div>
+
+                    <!-- Theme Switcher -->
+                    <div class="dropdown">
+                        <button class="btn btn-link text-decoration-none dropdown-toggle text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-shirt fs-4"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('blue')"><i class="ti ti-circle-filled text-primary me-2"></i> Blue</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('green')"><span class="text-success me-2">●</span> Green</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('purple')"><span style="color: #6f42c1" class="me-2">●</span> Purple</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('orange')"><span class="text-warning me-2">●</span> Orange</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('red')"><span class="text-danger me-2">●</span> Red</button></li>
+                        </ul>
+                    </div>
+
+                    <!-- Dark Mode Toggle -->
+                    <div class="form-check form-switch mb-0">
                         <input class="form-check-input" type="checkbox" id="darkModeToggle">
                         <label class="form-check-label" for="darkModeToggle"><i class="ti ti-moon fs-4 text-muted"></i></label>
+                    </div>
+
+                    <!-- Profile -->
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="../assets/images/user-placeholder.png" alt="User" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><h6 class="dropdown-header" data-i18n="welcome_message">Welcome back!</h6></li>
+                            <li><a class="dropdown-item" href="#"><i class="ti ti-user me-2"></i> <span data-i18n="profile">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="ti ti-settings me-2"></i> <span data-i18n="settings">Settings</span></a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="auth-login.html"><i class="ti ti-logout me-2"></i> <span data-i18n="logout">Logout</span></a></li>
+                        </ul>
                     </div>
                 </div>
             </header>
 
             <div class="container-fluid p-4">
-                <h1 class="h3 mb-4" data-i18n="forms">Forms</h1>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0" data-i18n="forms">Forms</h1>
+                     <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Forms</li>
+                        </ol>
+                    </nav>
+                </div>
 
                 <div class="row">
-                    <div class="col-lg-6">
-                        <div class="card mb-4">
-                            <div class="card-header">Basic Form</div>
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header border-0">
+                                <h5 class="card-title fw-bold mb-0">Basic Form</h5>
+                            </div>
                             <div class="card-body">
                                 <form>
                                     <div class="mb-3">
@@ -73,44 +137,83 @@
                                         <input type="checkbox" class="form-check-input" id="exampleCheck1">
                                         <label class="form-check-label" for="exampleCheck1">Check me out</label>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="submit" class="btn btn-primary px-4">Submit</button>
                                 </form>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-lg-6">
-                        <div class="card mb-4">
-                            <div class="card-header">Floating Labels</div>
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                             <div class="card-header border-0">
+                                <h5 class="card-title fw-bold mb-0">Input Sizes</h5>
+                            </div>
                             <div class="card-body">
-                                <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-                                    <label for="floatingInput">Email address</label>
-                                </div>
-                                <div class="form-floating">
-                                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-                                    <label for="floatingPassword">Password</label>
-                                </div>
+                                <input class="form-control form-control-lg mb-3" type="text" placeholder=".form-control-lg" aria-label=".form-control-lg example">
+                                <input class="form-control mb-3" type="text" placeholder="Default input" aria-label="default input example">
+                                <input class="form-control form-control-sm mb-3" type="text" placeholder=".form-control-sm" aria-label=".form-control-sm example">
+
+                                <label for="formFile" class="form-label mt-3">Default file input example</label>
+                                <input class="form-control" type="file" id="formFile">
                             </div>
                         </div>
+                    </div>
 
-                        <div class="card mb-4">
-                            <div class="card-header">Selects</div>
+                     <div class="col-12 mb-4">
+                        <div class="card">
+                             <div class="card-header border-0">
+                                <h5 class="card-title fw-bold mb-0">Horizontal Form</h5>
+                            </div>
                             <div class="card-body">
-                                <select class="form-select mb-3" aria-label="Default select example">
-                                    <option selected>Open this select menu</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
-                                </select>
+                                <form>
+                                    <div class="row mb-3">
+                                        <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+                                        <div class="col-sm-10">
+                                            <input type="email" class="form-control" id="inputEmail3">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
+                                        <div class="col-sm-10">
+                                            <input type="password" class="form-control" id="inputPassword3">
+                                        </div>
+                                    </div>
+                                    <fieldset class="row mb-3">
+                                        <legend class="col-form-label col-sm-2 pt-0">Radios</legend>
+                                        <div class="col-sm-10">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
+                                                <label class="form-check-label" for="gridRadios1">
+                                                    First radio
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2">
+                                                <label class="form-check-label" for="gridRadios2">
+                                                    Second radio
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-10 offset-sm-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="gridCheck1">
+                                                <label class="form-check-label" for="gridCheck1">
+                                                    Example checkbox
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Sign in</button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
 
-             <footer class="bg-white text-center py-3 mt-auto border-top">
+             <footer class="text-center py-4 mt-auto">
                 <div class="container small text-muted"><span>Copyright &copy; AdminPro 2023</span></div>
             </footer>
         </div>
