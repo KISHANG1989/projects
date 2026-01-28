@@ -3,7 +3,7 @@ name: Deploy AdminPro HTML to GitHub Pages
 on:
   push:
     branches:
-      - codemitr-adminpro-dashboard
+      - '*'
 
 permissions:
   contents: read
