@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AdminPro</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link id="bootstrap-css" href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tabler Icons -->
+    <link href="../assets/icons/tabler-icons.min.css" rel="stylesheet">
+    <!-- App CSS -->
+    <link href="../assets/css/app.css" rel="stylesheet">
+    <!-- Theme CSS (Dynamic) -->
+    <link id="theme-css" rel="stylesheet">
+    <!-- Dark Mode CSS (Dynamic) -->
+    <!-- Loaded by JS -->
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <i class="ti ti-brand-tabler fs-2 text-primary me-2"></i>
+                <span>AdminPro</span>
+            </div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="nav-link active">
+                    <i class="ti ti-dashboard"></i> <span data-i18n="dashboard">Dashboard</span>
+                </a>
+                <a href="charts.html" class="nav-link">
+                    <i class="ti ti-chart-pie"></i> <span data-i18n="charts">Charts</span>
+                </a>
+                <a href="tables.html" class="nav-link">
+                    <i class="ti ti-table"></i> <span data-i18n="tables">Tables</span>
+                </a>
+                <a href="forms.html" class="nav-link">
+                    <i class="ti ti-forms"></i> <span data-i18n="forms">Forms</span>
+                </a>
+                <div class="px-4 py-2 text-muted text-uppercase small mt-3" data-i18n="pages">Pages</div>
+                <a href="auth-login.html" class="nav-link">
+                    <i class="ti ti-lock"></i> <span data-i18n="authentication">Authentication</span>
+                </a>
+                <a href="../documentation/index.html" class="nav-link">
+                    <i class="ti ti-file-text"></i> Documentation
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Overlay for mobile -->
+            <div class="sidebar-overlay"></div>
+
+            <!-- Topbar -->
+            <header class="topbar">
+                <button id="sidebarToggle" class="btn btn-link text-muted d-lg-none">
+                    <i class="ti ti-menu-2 fs-3"></i>
+                </button>
+
+                <div class="ms-auto d-flex align-items-center gap-3">
+
+                    <!-- Language Selector -->
+                    <div class="dropdown">
+                        <button class="btn btn-link text-decoration-none dropdown-toggle text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-world fs-4"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item" onclick="setLanguage('en')">English</button></li>
+                            <li><button class="dropdown-item" onclick="setLanguage('hi')">Hindi</button></li>
+                            <li><button class="dropdown-item" onclick="setLanguage('ar')">Arabic</button></li>
+                        </ul>
+                    </div>
+
+                    <!-- Theme Switcher -->
+                    <div class="dropdown">
+                        <button class="btn btn-link text-decoration-none dropdown-toggle text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-shirt fs-4"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('blue')"><i class="ti ti-circle-filled text-primary me-2"></i> Blue</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('green')"><span class="text-success me-2">●</span> Green</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('purple')"><span style="color: #6f42c1" class="me-2">●</span> Purple</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('orange')"><span class="text-warning me-2">●</span> Orange</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('red')"><span class="text-danger me-2">●</span> Red</button></li>
+                        </ul>
+                    </div>
+
+                    <!-- Dark Mode Toggle -->
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                        <label class="form-check-label" for="darkModeToggle"><i class="ti ti-moon fs-4 text-muted"></i></label>
+                    </div>
+
+                    <!-- Profile -->
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="../assets/images/user-placeholder.png" alt="User" class="rounded-circle bg-secondary" width="35" height="35">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><h6 class="dropdown-header" data-i18n="welcome_message">Welcome back!</h6></li>
+                            <li><a class="dropdown-item" href="#"><i class="ti ti-user me-2"></i> <span data-i18n="profile">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="ti ti-settings me-2"></i> <span data-i18n="settings">Settings</span></a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="auth-login.html"><i class="ti ti-logout me-2"></i> <span data-i18n="logout">Logout</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="container-fluid p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3" data-i18n="dashboard">Dashboard</h1>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card h-100 border-start border-4 border-primary">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="text-muted small text-uppercase fw-bold mb-1" data-i18n="earnings">Earnings</div>
+                                        <div class="h5 mb-0 fw-bold">$40,000</div>
+                                    </div>
+                                    <div class="ms-3 text-muted">
+                                        <i class="ti ti-currency-dollar fs-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card h-100 border-start border-4 border-success">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="text-muted small text-uppercase fw-bold mb-1" data-i18n="orders">Orders</div>
+                                        <div class="h5 mb-0 fw-bold">215</div>
+                                    </div>
+                                    <div class="ms-3 text-muted">
+                                        <i class="ti ti-shopping-cart fs-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card h-100 border-start border-4 border-info">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="text-muted small text-uppercase fw-bold mb-1">Tasks</div>
+                                        <div class="h5 mb-0 fw-bold">50%</div>
+                                    </div>
+                                    <div class="ms-3 text-muted">
+                                        <i class="ti ti-list-check fs-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card h-100 border-start border-4 border-warning">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="text-muted small text-uppercase fw-bold mb-1">Pending</div>
+                                        <div class="h5 mb-0 fw-bold">18</div>
+                                    </div>
+                                    <div class="ms-3 text-muted">
+                                        <i class="ti ti-message-2 fs-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row">
+                    <div class="col-lg-8 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 text-primary fw-bold" data-i18n="revenue">Revenue Overview</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="chart-revenue"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 text-primary fw-bold">Sources</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="chart-pie"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Table -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="m-0 fw-bold" data-i18n="recent_activity">Recent Activity</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Position</th>
+                                        <th>Office</th>
+                                        <th>Age</th>
+                                        <th>Start date</th>
+                                        <th>Salary</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Tiger Nixon</td>
+                                        <td>System Architect</td>
+                                        <td>Edinburgh</td>
+                                        <td>61</td>
+                                        <td>2011/04/25</td>
+                                        <td>$320,800</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Garrett Winters</td>
+                                        <td>Accountant</td>
+                                        <td>Tokyo</td>
+                                        <td>63</td>
+                                        <td>2011/07/25</td>
+                                        <td>$170,750</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ashton Cox</td>
+                                        <td>Junior Technical Author</td>
+                                        <td>San Francisco</td>
+                                        <td>66</td>
+                                        <td>2009/01/12</td>
+                                        <td>$86,000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- End Page Content -->
+
+            <footer class="bg-white text-center py-3 mt-auto border-top">
+                <div class="container small text-muted">
+                    <span>Copyright &copy; AdminPro 2023</span>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Core JS -->
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/apexcharts.min.js"></script>
+
+    <!-- App Logic -->
+    <script src="../assets/js/dark-mode.js"></script>
+    <script src="../assets/js/theme-switcher.js"></script>
+    <script src="../assets/js/lang.js"></script>
+    <script src="../assets/js/app.js"></script>
+
+    <!-- Page Specific Script -->
+    <script>
+        // Revenue Chart (Line)
+        var optionsRevenue = {
+            series: [{
+                name: 'Revenue',
+                data: [31, 40, 28, 51, 42, 109, 100]
+            }, {
+                name: 'Cost',
+                data: [11, 32, 45, 32, 34, 52, 41]
+            }],
+            chart: {
+                height: 350,
+                type: 'area',
+                toolbar: { show: false }
+            },
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth' },
+            colors: ['#0d6efd', '#6c757d'],
+            xaxis: {
+                type: 'datetime',
+                categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
+            },
+            tooltip: { x: { format: 'dd/MM/yy HH:mm' } },
+        };
+
+        var chartRevenue = new ApexCharts(document.querySelector("#chart-revenue"), optionsRevenue);
+        chartRevenue.render();
+
+        // Sources Chart (Donut)
+        var optionsPie = {
+            series: [44, 55, 41, 17],
+            labels: ['Direct', 'Social', 'Referral', 'Organic'],
+            chart: {
+                type: 'donut',
+                height: 320
+            },
+            colors: ['#0d6efd', '#198754', '#ffc107', '#dc3545'],
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: { width: 200 },
+                    legend: { position: 'bottom' }
+                }
+            }]
+        };
+
+        var chartPie = new ApexCharts(document.querySelector("#chart-pie"), optionsPie);
+        chartPie.render();
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tables - AdminPro</title>
+    <link id="bootstrap-css" href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/icons/tabler-icons.min.css" rel="stylesheet">
+    <link href="../assets/css/app.css" rel="stylesheet">
+    <link id="theme-css" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <i class="ti ti-brand-tabler fs-2 text-primary me-2"></i>
+                <span>AdminPro</span>
+            </div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="ti ti-dashboard"></i> <span data-i18n="dashboard">Dashboard</span>
+                </a>
+                <a href="charts.html" class="nav-link">
+                    <i class="ti ti-chart-pie"></i> <span data-i18n="charts">Charts</span>
+                </a>
+                <a href="tables.html" class="nav-link active">
+                    <i class="ti ti-table"></i> <span data-i18n="tables">Tables</span>
+                </a>
+                <a href="forms.html" class="nav-link">
+                    <i class="ti ti-forms"></i> <span data-i18n="forms">Forms</span>
+                </a>
+                <div class="px-4 py-2 text-muted text-uppercase small mt-3" data-i18n="pages">Pages</div>
+                <a href="auth-login.html" class="nav-link">
+                    <i class="ti ti-lock"></i> <span data-i18n="authentication">Authentication</span>
+                </a>
+                <a href="../documentation/index.html" class="nav-link">
+                    <i class="ti ti-file-text"></i> Documentation
+                </a>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <div class="sidebar-overlay"></div>
+            <header class="topbar">
+                <button id="sidebarToggle" class="btn btn-link text-muted d-lg-none"><i class="ti ti-menu-2 fs-3"></i></button>
+                <div class="ms-auto d-flex align-items-center gap-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                        <label class="form-check-label" for="darkModeToggle"><i class="ti ti-moon fs-4 text-muted"></i></label>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container-fluid p-4">
+                <h1 class="h3 mb-4" data-i18n="tables">Tables</h1>
+
+                <div class="card mb-4">
+                    <div class="card-header">Striped Table</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">First</th>
+                                        <th scope="col">Last</th>
+                                        <th scope="col">Handle</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>Mark</td>
+                                        <td>Otto</td>
+                                        <td>@mdo</td>
+                                        <td><span class="badge bg-success">Active</span></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">2</th>
+                                        <td>Jacob</td>
+                                        <td>Thornton</td>
+                                        <td>@fat</td>
+                                        <td><span class="badge bg-warning text-dark">Pending</span></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">3</th>
+                                        <td>Larry</td>
+                                        <td>the Bird</td>
+                                        <td>@twitter</td>
+                                        <td><span class="badge bg-danger">Inactive</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">Hoverable Table</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Product</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>AdminPro License</td>
+                                        <td>$24.00</td>
+                                        <td>Aug 12, 2023</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">2</th>
+                                        <td>Standard License</td>
+                                        <td>$12.00</td>
+                                        <td>Aug 15, 2023</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+             <footer class="bg-white text-center py-3 mt-auto border-top">
+                <div class="container small text-muted"><span>Copyright &copy; AdminPro 2023</span></div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/dark-mode.js"></script>
+    <script src="../assets/js/theme-switcher.js"></script>
+    <script src="../assets/js/lang.js"></script>
+    <script src="../assets/js/app.js"></script>
+</body>
+</html>

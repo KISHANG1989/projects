@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charts - AdminPro</title>
+    <link id="bootstrap-css" href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/icons/tabler-icons.min.css" rel="stylesheet">
+    <link href="../assets/css/app.css" rel="stylesheet">
+    <link id="theme-css" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <i class="ti ti-brand-tabler fs-2 text-primary me-2"></i>
+                <span>AdminPro</span>
+            </div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="ti ti-dashboard"></i> <span data-i18n="dashboard">Dashboard</span>
+                </a>
+                <a href="charts.html" class="nav-link active">
+                    <i class="ti ti-chart-pie"></i> <span data-i18n="charts">Charts</span>
+                </a>
+                <a href="tables.html" class="nav-link">
+                    <i class="ti ti-table"></i> <span data-i18n="tables">Tables</span>
+                </a>
+                <a href="forms.html" class="nav-link">
+                    <i class="ti ti-forms"></i> <span data-i18n="forms">Forms</span>
+                </a>
+                <div class="px-4 py-2 text-muted text-uppercase small mt-3" data-i18n="pages">Pages</div>
+                <a href="auth-login.html" class="nav-link">
+                    <i class="ti ti-lock"></i> <span data-i18n="authentication">Authentication</span>
+                </a>
+                <a href="../documentation/index.html" class="nav-link">
+                    <i class="ti ti-file-text"></i> Documentation
+                </a>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <div class="sidebar-overlay"></div>
+            <header class="topbar">
+                <button id="sidebarToggle" class="btn btn-link text-muted d-lg-none"><i class="ti ti-menu-2 fs-3"></i></button>
+                <div class="ms-auto d-flex align-items-center gap-3">
+                     <!-- Simplified Topbar for Secondary Pages -->
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                        <label class="form-check-label" for="darkModeToggle"><i class="ti ti-moon fs-4 text-muted"></i></label>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container-fluid p-4">
+                <h1 class="h3 mb-4" data-i18n="charts">Charts</h1>
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">Line Chart</div>
+                            <div class="card-body">
+                                <div id="chart-line"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">Bar Chart</div>
+                            <div class="card-body">
+                                <div id="chart-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">Area Chart</div>
+                            <div class="card-body">
+                                <div id="chart-area"></div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">Donut Chart</div>
+                            <div class="card-body">
+                                <div id="chart-donut"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <footer class="bg-white text-center py-3 mt-auto border-top">
+                <div class="container small text-muted"><span>Copyright &copy; AdminPro 2023</span></div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/apexcharts.min.js"></script>
+    <script src="../assets/js/dark-mode.js"></script>
+    <script src="../assets/js/theme-switcher.js"></script>
+    <script src="../assets/js/lang.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script>
+        // Line
+        new ApexCharts(document.querySelector("#chart-line"), {
+            series: [{name: "Desktops", data: [10, 41, 35, 51, 49, 62, 69, 91, 148]}],
+            chart: {height: 350, type: 'line', zoom: {enabled: false}},
+            dataLabels: {enabled: false},
+            stroke: {curve: 'straight'},
+            grid: {row: {colors: ['#f3f3f3', 'transparent'], opacity: 0.5}},
+        }).render();
+
+        // Bar
+        new ApexCharts(document.querySelector("#chart-bar"), {
+            series: [{data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380]}],
+            chart: {type: 'bar', height: 350},
+            plotOptions: {bar: {borderRadius: 4, horizontal: true}},
+            dataLabels: {enabled: false},
+            xaxis: {categories: ['South Korea', 'Canada', 'United Kingdom', 'Netherlands', 'Italy', 'France', 'Japan', 'United States', 'China', 'Germany']},
+        }).render();
+
+        // Area
+        new ApexCharts(document.querySelector("#chart-area"), {
+            series: [{name: 'STOCK ABC', data: [31, 40, 28, 51, 42, 109, 100]}],
+            chart: {type: 'area', height: 350, zoom: {enabled: false}},
+            dataLabels: {enabled: false},
+            stroke: {curve: 'straight'},
+        }).render();
+
+        // Donut
+         new ApexCharts(document.querySelector("#chart-donut"), {
+            series: [44, 55, 41, 17, 15],
+            chart: {type: 'donut'},
+        }).render();
+    </script>
+</body>
+</html>
