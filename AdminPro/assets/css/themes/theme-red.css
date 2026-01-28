@@ -1,0 +1,12 @@
+:root {
+    --primary-color: #dc3545;
+    --primary-hover: #bb2d3b;
+    --sidebar-active-text: #dc3545;
+}
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.text-primary {
+    color: var(--primary-color) !important;
+}

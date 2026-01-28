@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tables - AdminPro</title>
+    <link id="bootstrap-css" href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/icons/tabler-icons.min.css" rel="stylesheet">
+    <link href="../assets/css/modern-admin.css?v=3.0" rel="stylesheet">
+    <link id="theme-css" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <i class="ti ti-brand-tabler fs-2 text-primary me-2"></i>
+                <span>AdminPro</span>
+            </div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="ti ti-dashboard"></i> <span data-i18n="dashboard">Dashboard</span>
+                </a>
+                <a href="charts.html" class="nav-link">
+                    <i class="ti ti-chart-pie"></i> <span data-i18n="charts">Charts</span>
+                </a>
+                <a href="tables.html" class="nav-link active">
+                    <i class="ti ti-table"></i> <span data-i18n="tables">Tables</span>
+                </a>
+                <a href="forms.html" class="nav-link">
+                    <i class="ti ti-forms"></i> <span data-i18n="forms">Forms</span>
+                </a>
+                <div class="px-4 py-2 text-muted text-uppercase small mt-3" data-i18n="pages">Pages</div>
+                <a href="auth-login.html" class="nav-link">
+                    <i class="ti ti-lock"></i> <span data-i18n="authentication">Authentication</span>
+                </a>
+                <a href="../documentation/index.html" class="nav-link">
+                    <i class="ti ti-file-text"></i> Documentation
+                </a>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <div class="sidebar-overlay"></div>
+
+            <!-- Topbar -->
+            <header class="topbar">
+                <button id="sidebarToggle" class="btn btn-link text-muted d-lg-none">
+                    <i class="ti ti-menu-2 fs-3"></i>
+                </button>
+
+                <div class="d-none d-md-block">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-0 ps-0"><i class="ti ti-search fs-4 text-muted"></i></span>
+                        <input type="text" class="form-control bg-transparent border-0" placeholder="Search..." aria-label="Search">
+                    </div>
+                </div>
+
+                <div class="ms-auto d-flex align-items-center gap-3">
+
+                    <!-- Language Selector -->
+                    <div class="dropdown">
+                        <button class="btn btn-link text-decoration-none dropdown-toggle text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-world fs-4"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item" onclick="setLanguage('en')">English</button></li>
+                            <li><button class="dropdown-item" onclick="setLanguage('hi')">Hindi</button></li>
+                            <li><button class="dropdown-item" onclick="setLanguage('ar')">Arabic</button></li>
+                        </ul>
+                    </div>
+
+                    <!-- Theme Switcher -->
+                    <div class="dropdown">
+                        <button class="btn btn-link text-decoration-none dropdown-toggle text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-shirt fs-4"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('blue')"><i class="ti ti-circle-filled text-primary me-2"></i> Blue</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('green')"><span class="text-success me-2">●</span> Green</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('purple')"><span style="color: #6f42c1" class="me-2">●</span> Purple</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('orange')"><span class="text-warning me-2">●</span> Orange</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('red')"><span class="text-danger me-2">●</span> Red</button></li>
+                        </ul>
+                    </div>
+
+                    <!-- Dark Mode Toggle -->
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                        <label class="form-check-label" for="darkModeToggle"><i class="ti ti-moon fs-4 text-muted"></i></label>
+                    </div>
+
+                    <!-- Profile -->
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="../assets/images/user-placeholder.svg" alt="User" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><h6 class="dropdown-header" data-i18n="welcome_message">Welcome back!</h6></li>
+                            <li><a class="dropdown-item" href="#"><i class="ti ti-user me-2"></i> <span data-i18n="profile">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="ti ti-settings me-2"></i> <span data-i18n="settings">Settings</span></a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="auth-login.html"><i class="ti ti-logout me-2"></i> <span data-i18n="logout">Logout</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container-fluid p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0" data-i18n="tables">Tables</h1>
+                     <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Tables</li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header border-0">
+                        <h5 class="card-title fw-bold mb-0">Striped Table</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped align-middle">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">First</th>
+                                        <th scope="col">Last</th>
+                                        <th scope="col">Handle</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col" class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>Mark</td>
+                                        <td>Otto</td>
+                                        <td>@mdo</td>
+                                        <td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Active</span></td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-light text-primary"><i class="ti ti-pencil"></i></button>
+                                            <button class="btn btn-sm btn-light text-danger"><i class="ti ti-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">2</th>
+                                        <td>Jacob</td>
+                                        <td>Thornton</td>
+                                        <td>@fat</td>
+                                        <td><span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3">Pending</span></td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-light text-primary"><i class="ti ti-pencil"></i></button>
+                                            <button class="btn btn-sm btn-light text-danger"><i class="ti ti-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">3</th>
+                                        <td>Larry</td>
+                                        <td>the Bird</td>
+                                        <td>@twitter</td>
+                                        <td><span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3">Inactive</span></td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-light text-primary"><i class="ti ti-pencil"></i></button>
+                                            <button class="btn btn-sm btn-light text-danger"><i class="ti ti-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header border-0">
+                         <h5 class="card-title fw-bold mb-0">Hoverable Table</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Product</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col" class="text-end">Invoice</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-light rounded p-2 me-3"><i class="ti ti-package fs-4"></i></div>
+                                                <div>
+                                                    <div class="fw-bold">AdminPro License</div>
+                                                    <div class="small text-muted">HTML Admin Template</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fw-bold">$24.00</td>
+                                        <td>Aug 12, 2023</td>
+                                        <td class="text-end"><button class="btn btn-sm btn-light"><i class="ti ti-download"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">2</th>
+                                        <td>
+                                             <div class="d-flex align-items-center">
+                                                <div class="bg-light rounded p-2 me-3"><i class="ti ti-package fs-4"></i></div>
+                                                <div>
+                                                    <div class="fw-bold">Standard License</div>
+                                                    <div class="small text-muted">Single Site</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fw-bold">$12.00</td>
+                                        <td>Aug 15, 2023</td>
+                                        <td class="text-end"><button class="btn btn-sm btn-light"><i class="ti ti-download"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+             <footer class="text-center py-4 mt-auto">
+                <div class="container small text-muted"><span>Copyright &copy; AdminPro 2023</span></div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/dark-mode.js"></script>
+    <script src="../assets/js/theme-switcher.js"></script>
+    <script src="../assets/js/lang.js"></script>
+    <script src="../assets/js/app.js"></script>
+</body>
+</html>
