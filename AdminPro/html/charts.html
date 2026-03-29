@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charts - AdminPro</title>
+    <!-- Bootstrap 5 CSS -->
+    <link id="bootstrap-css" href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tabler Icons -->
+    <link href="../assets/icons/tabler-icons.min.css" rel="stylesheet">
+    <!-- App CSS -->
+    <link href="../assets/css/modern-admin.css?v=3.0" rel="stylesheet">
+    <!-- Theme CSS (Dynamic) -->
+    <link id="theme-css" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <i class="ti ti-brand-tabler fs-2 text-primary me-2"></i>
+                <span>AdminPro</span>
+            </div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="ti ti-dashboard"></i> <span data-i18n="dashboard">Dashboard</span>
+                </a>
+                <a href="charts.html" class="nav-link active">
+                    <i class="ti ti-chart-pie"></i> <span data-i18n="charts">Charts</span>
+                </a>
+                <a href="tables.html" class="nav-link">
+                    <i class="ti ti-table"></i> <span data-i18n="tables">Tables</span>
+                </a>
+                <a href="forms.html" class="nav-link">
+                    <i class="ti ti-forms"></i> <span data-i18n="forms">Forms</span>
+                </a>
+                <div class="px-4 py-2 text-muted text-uppercase small mt-3" data-i18n="pages">Pages</div>
+                <a href="auth-login.html" class="nav-link">
+                    <i class="ti ti-lock"></i> <span data-i18n="authentication">Authentication</span>
+                </a>
+                <a href="../documentation/index.html" class="nav-link">
+                    <i class="ti ti-file-text"></i> Documentation
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="sidebar-overlay"></div>
+
+            <!-- Topbar -->
+            <header class="topbar">
+                <button id="sidebarToggle" class="btn btn-link text-muted d-lg-none">
+                    <i class="ti ti-menu-2 fs-3"></i>
+                </button>
+
+                <div class="d-none d-md-block">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-0 ps-0"><i class="ti ti-search fs-4 text-muted"></i></span>
+                        <input type="text" class="form-control bg-transparent border-0" placeholder="Search..." aria-label="Search">
+                    </div>
+                </div>
+
+                <div class="ms-auto d-flex align-items-center gap-3">
+
+                    <!-- Language Selector -->
+                    <div class="dropdown">
+                        <button class="btn btn-link text-decoration-none dropdown-toggle text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-world fs-4"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item" onclick="setLanguage('en')">English</button></li>
+                            <li><button class="dropdown-item" onclick="setLanguage('hi')">Hindi</button></li>
+                            <li><button class="dropdown-item" onclick="setLanguage('ar')">Arabic</button></li>
+                        </ul>
+                    </div>
+
+                    <!-- Theme Switcher -->
+                    <div class="dropdown">
+                        <button class="btn btn-link text-decoration-none dropdown-toggle text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-shirt fs-4"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('blue')"><i class="ti ti-circle-filled text-primary me-2"></i> Blue</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('green')"><span class="text-success me-2">●</span> Green</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('purple')"><span style="color: #6f42c1" class="me-2">●</span> Purple</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('orange')"><span class="text-warning me-2">●</span> Orange</button></li>
+                            <li><button class="dropdown-item d-flex align-items-center" onclick="setTheme('red')"><span class="text-danger me-2">●</span> Red</button></li>
+                        </ul>
+                    </div>
+
+                    <!-- Dark Mode Toggle -->
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                        <label class="form-check-label" for="darkModeToggle"><i class="ti ti-moon fs-4 text-muted"></i></label>
+                    </div>
+
+                    <!-- Profile -->
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="../assets/images/user-placeholder.svg" alt="User" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><h6 class="dropdown-header" data-i18n="welcome_message">Welcome back!</h6></li>
+                            <li><a class="dropdown-item" href="#"><i class="ti ti-user me-2"></i> <span data-i18n="profile">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="ti ti-settings me-2"></i> <span data-i18n="settings">Settings</span></a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="auth-login.html"><i class="ti ti-logout me-2"></i> <span data-i18n="logout">Logout</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container-fluid p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0" data-i18n="charts">Charts</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Charts</li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header border-0 pb-0">
+                                <h5 class="card-title fw-bold">Line Chart</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="chart-line"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header border-0 pb-0">
+                                <h5 class="card-title fw-bold">Bar Chart</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="chart-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header border-0 pb-0">
+                                <h5 class="card-title fw-bold">Area Gradient</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="chart-area"></div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header border-0 pb-0">
+                                <h5 class="card-title fw-bold">Donut Chart</h5>
+                            </div>
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <div id="chart-donut" class="w-100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <footer class="text-center py-4 mt-auto">
+                <div class="container small text-muted"><span>Copyright &copy; AdminPro 2023</span></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Core JS -->
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/apexcharts.min.js"></script>
+
+    <!-- App Logic -->
+    <script src="../assets/js/dark-mode.js"></script>
+    <script src="../assets/js/theme-switcher.js"></script>
+    <script src="../assets/js/lang.js"></script>
+    <script src="../assets/js/app.js"></script>
+
+    <!-- Chart Logic -->
+    <script>
+        // Common Chart Options for Consistency
+        const isDark = localStorage.getItem('darkMode') === 'enabled';
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+        const gridColor = isDark ? 'rgba(255,255,255,0.05)' : '#f1f5f9';
+        const commonOptions = {
+            chart: {
+                fontFamily: 'inherit',
+                background: 'transparent',
+                toolbar: { show: false }
+            },
+            dataLabels: { enabled: false },
+            grid: {
+                borderColor: gridColor,
+                strokeDashArray: 4
+            },
+            tooltip: { theme: isDark ? 'dark' : 'light' },
+            xaxis: {
+                labels: { style: { colors: textColor } },
+                axisBorder: { show: false },
+                axisTicks: { show: false }
+            },
+            yaxis: {
+                labels: { style: { colors: textColor } }
+            }
+        };
+
+        // Line Chart
+        new ApexCharts(document.querySelector("#chart-line"), {
+            ...commonOptions,
+            series: [{name: "Visits", data: [10, 41, 35, 51, 49, 62, 69, 91, 148]}],
+            chart: { ...commonOptions.chart, height: 350, type: 'line' },
+            stroke: { curve: 'smooth', width: 3 },
+            colors: ['#4361ee']
+        }).render();
+
+        // Bar Chart
+        new ApexCharts(document.querySelector("#chart-bar"), {
+            ...commonOptions,
+            series: [{name: "Sales", data: [400, 430, 448, 470, 540, 580, 690]}],
+            chart: { ...commonOptions.chart, height: 350, type: 'bar' },
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    horizontal: true,
+                    barHeight: '50%'
+                }
+            },
+            colors: ['#2ec4b6'],
+            xaxis: {
+                ...commonOptions.xaxis,
+                categories: ['South Korea', 'Canada', 'UK', 'Netherlands', 'Italy', 'France', 'Japan']
+            }
+        }).render();
+
+        // Area Chart
+        new ApexCharts(document.querySelector("#chart-area"), {
+            ...commonOptions,
+            series: [{name: 'Growth', data: [31, 40, 28, 51, 42, 109, 100]}],
+            chart: { ...commonOptions.chart, height: 350, type: 'area' },
+            stroke: { curve: 'smooth', width: 3 },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.6,
+                    opacityTo: 0.1,
+                    stops: [0, 90, 100]
+                }
+            },
+            colors: ['#7209b7']
+        }).render();
+
+        // Donut Chart
+         new ApexCharts(document.querySelector("#chart-donut"), {
+            series: [44, 55, 41, 17],
+            labels: ['Direct', 'Social', 'Referral', 'Organic'],
+            chart: {
+                type: 'donut',
+                fontFamily: 'inherit',
+                background: 'transparent'
+            },
+            stroke: { show: false },
+            colors: ['#4361ee', '#2ec4b6', '#ff9f1c', '#ef233c'],
+            legend: {
+                position: 'bottom',
+                labels: { colors: textColor }
+            },
+             tooltip: { theme: isDark ? 'dark' : 'light' }
+        }).render();
+
+        // Reload on dark mode toggle
+        document.getElementById('darkModeToggle').addEventListener('change', function() {
+            setTimeout(() => location.reload(), 100);
+        });
+    </script>
+</body>
+</html>

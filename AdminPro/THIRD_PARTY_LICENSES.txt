@@ -1,0 +1,15 @@
+Third Party Licenses
+
+This project uses the following third-party libraries:
+
+1. Bootstrap 5
+   - License: MIT
+   - Website: https://getbootstrap.com/
+
+2. ApexCharts
+   - License: MIT
+   - Website: https://apexcharts.com/
+
+3. Tabler Icons
+   - License: MIT
+   - Website: https://tabler-icons.io/
